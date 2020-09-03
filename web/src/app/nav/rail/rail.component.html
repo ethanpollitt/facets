@@ -1,9 +1,16 @@
 <mat-sidenav-container fxFlexFill>
   <mat-sidenav [class.mat-elevation-z2]="true" class="rail full" mode="side" [opened]="true" [disableClose]="true">
-    <div style="margin: 12px;">
-      <h1>Facets</h1>
+    <div class="logo" fxLayout="row" fxLayoutAlign="center center">
+      <div class="name" fxFlex="none">facets</div>
+      <div class="img" fxFlex="none">
+        <img width="16px" height="16px" src="../../../assets/img/ruby.png" />
+      </div>
     </div>
-    <div></div>
+    <div>
+      <ul>
+        <li><a href="/clients">Clients</a></li>
+      </ul>
+    </div>
   </mat-sidenav>
   <mat-sidenav-content><ng-content></ng-content></mat-sidenav-content>
 </mat-sidenav-container>

@@ -13,3 +13,21 @@
 .collapsed {
   width: 40px;
 }
+
+.logo {
+  margin: 6px;
+  padding: 7px;
+  border-radius: 16px;
+  background-color: black;
+  color: white;
+
+  .name {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .img > img {
+    vertical-align: middle;
+    margin-left: 4px;
+  }
+}
