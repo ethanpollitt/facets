@@ -1,0 +1,1 @@
+mongod --dbpath /data --fork --logpath ./logs/mongod.log

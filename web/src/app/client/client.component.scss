@@ -1,0 +1,19 @@
+@import '~@angular/material/theming';
+
+.card-header {
+  font-weight: 600;
+}
+
+.no-bottom-radius {
+  border-bottom-left-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+.no-top-radius {
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+}
+
+.no-radius {
+  border-radius: 0px;
+}

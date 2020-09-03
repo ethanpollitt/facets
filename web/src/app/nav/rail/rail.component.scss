@@ -1,0 +1,15 @@
+@import '~@angular/material/theming';
+@import '../../../styles.scss';
+
+.rail {
+  border: none;
+  background-color: mat-color($primary);
+}
+
+.full {
+  width: 120px;
+}
+
+.collapsed {
+  width: 40px;
+}

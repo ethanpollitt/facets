@@ -1,0 +1,21 @@
+<div *ngIf="clients">
+  <mat-card class="card-header no-bottom-radius" fxLayout="row" fxLayoutAlign="start center">
+    <!-- <div fxFlex="5%">Cust. ID</div> -->
+    <div fxFlex="30%">Full Name</div>
+    <div fxFlex="20%">Phone Number</div>
+    <div fxFlex="40%">Address</div>
+    <div fxFlex="10%">Is Square Cust.</div>
+  </mat-card>
+  <mat-card *ngFor="let c of clients; last as isLast" [class]="{ 'no-radius': !isLast, 'no-top-radius': isLast }">
+    <!-- <div fxFlex="5%">{{ c.id }}</div> -->
+    <div fxFlex="30%">{{ c.firstName }} {{ c.lastName }}</div>
+    <div fxFlex="20%"><a href="tel:{{ c.phoneNum }}">{{ c.phoneNum }}</a></div>
+    <div fxFlex="40%">
+      <a target="_blank" href="https://www.google.com/maps/search/?api=1&query={{ c.streetAddr + ', ' + c.city + ', ' + c.state + ' ' + c.zip | encodeUri }}">
+       {{ c.streetAddr }}, {{ c.city }}, {{ c.state }} {{ c.zip }}
+      </a>
+    </div>
+    <div fxFlex="10%">{{ c.squareCust ? 'YES' : 'NO' }}</div>
+  </mat-card>
+</div>
+<div *ngIf="!clients">No clients found!</div>
