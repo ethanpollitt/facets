@@ -7,6 +7,14 @@ Installing facets in a *nix system is accomplished through the the use of a `bas
 ### Prerequisites
 facets requires __Node.js__ (v10+) and __MongoDB__ (v4+) to operate. Please ensure these are installed before beginning the facets installation.
 
+### Permissions
+Run the following `chmod` commands to ensure all required scripts are set to Executable.
+```bash
+chmod +x ./install.sh
+chmod +x ./bin/*.sh
+chmod +x ./env/*/bin/*.sh
+```
+
 ### Install Script
 Run the included `install.sh` script with the desired environment argument:
   - __l__ for Local
@@ -27,4 +35,3 @@ Run the included `install.sh` script with the desired environment argument:
 ```bash
 ./bin/startComponents.sh
 ```
-

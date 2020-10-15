@@ -8,7 +8,7 @@ import { Client } from './client.model';
   providedIn: 'root'
 })
 export class ClientService {
-  private host: string = 'localhost';
+  private host: string = window.location.hostname;
   private port: number = 3000;
   private entity: string = 'client';
   private baseUrl: string = `http://${this.host}:${this.port}/${this.entity}`;
