@@ -1,7 +1,10 @@
 @import '~@angular/material/theming';
 
+
 .card-header {
   font-weight: 600;
+  // background: darken(mat-color($mat-light-theme-background, card), 3%);
+  // border-bottom: 5px black;
 }
 
 .no-bottom-radius {
@@ -16,4 +19,21 @@
 
 .no-radius {
   border-radius: 0px;
+}
+
+.selectable {
+  transition: all .5s;
+}
+
+.selectable:nth-child(odd) {
+  background: darken(mat-color($mat-light-theme-background, card), 3%);
+}
+
+.selectable:hover {
+  @include mat-elevation(2);
+  background: darken(mat-color($mat-light-theme-background, card), 10%);
+}
+
+.selected {
+  background: darken(mat-color($mat-light-theme-background, card), 15%);
 }

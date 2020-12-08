@@ -22,11 +22,39 @@ export class ClientService {
     );
   }
 
-  createClient = (client: Client): Observable<boolean> => {
+  createClient = (client: Client): Observable<Client> => {
     const url = this.baseUrl;
     return this.http.post(url, client, { observe: "response" }).pipe(
       map(_ => {
-        if (_.status > 200 && _.status < 300)
+        if (_.status >= 200 && _.status < 300)
+          return new Client(_.body);
+        return null;
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  updateClient = (client: Client): Observable<Client> => {
+    let url = this.baseUrl;
+    if ('id' in client && !!client.id)
+      url += `/${client.id}`;
+    else
+      return throwError('ID required to update a Client!');
+    return this.http.put(url, client, { observe: "response" }).pipe(
+      map(_ => {
+        if (_.status >= 200 && _.status < 300)
+          return new Client(_.body);
+        return null;
+      }),
+      catchError(this.handleError)
+    );
+  }
+
+  deleteClient = (id: number): Observable<boolean> => {
+    const url = `${this.baseUrl}/${id}`;
+    return this.http.delete(url, { observe: "response" }).pipe(
+      map(_ => {
+        if (_.status >= 200 && _.status < 300)
           return true;
         return false;
       }),

@@ -9,4 +9,15 @@ export class Client {
   state: string;
   zip: string;
   squareCust: boolean;
+
+  public constructor(init: Partial<Client>) {
+    if (init) {
+      Object.assign(this, init);
+      
+      if (!init.squareCust)
+        this.squareCust = false;
+    }
+  }
+
+  isEqual = (other: Client) => Object.keys(this).every(_ => this[_] === other[_]);
 }

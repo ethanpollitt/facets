@@ -6,13 +6,14 @@
     <div fxFlex="40%">Address</div>
     <div fxFlex="10%">Is Square Cust.</div>
   </mat-card>
-  <mat-card *ngFor="let c of clients; last as isLast" [class]="{ 'no-radius': !isLast, 'no-top-radius': isLast }">
+  <mat-card class="selectable" *ngFor="let c of clients; index as i; last as isLast" (click)="onRowClick(i)"
+      [class]="{ 'no-radius': !isLast, 'no-top-radius': isLast, 'selected': selected.includes(i), 'selectable': !selected.includes(i) }">
     <!-- <div fxFlex="5%">{{ c.id }}</div> -->
     <div fxFlex="30%">{{ c.firstName }} {{ c.lastName }}</div>
     <div fxFlex="20%"><a href="tel:{{ c.phoneNum }}">{{ c.phoneNum }}</a></div>
     <div fxFlex="40%">
-      <a target="_blank" href="https://www.google.com/maps/search/?api=1&query={{ c.streetAddr + ', ' + c.city + ', ' + c.state + ' ' + c.zip | encodeUri }}">
-       {{ c.streetAddr }}, {{ c.city }}, {{ c.state }} {{ c.zip }}
+      <a target="_blank" href="https://www.google.com/maps/search/?api=1&query={{ addresses.get(c.id) | encodeUri }}">
+        {{ addresses.get(c.id) }}
       </a>
     </div>
     <div fxFlex="10%">{{ c.squareCust ? 'YES' : 'NO' }}</div>

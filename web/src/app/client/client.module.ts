@@ -9,18 +9,21 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { MatButtonModule } from '@angular/material/button';
 
 import { ClientComponent } from './client.component';
 import { ClientService } from './client.service';
 import { EncodeUriPipe } from '../shared/pipes/encode-uri.pipe';
 import { SharedModule } from '../shared/shared.module';
-import { CreateClientComponent } from './create/create.component';
-import { MatButtonModule } from '@angular/material/button';
+import { CreateUpdateClientComponent } from './create-update/create-update.component';
+import { DeleteClientComponent } from './delete/delete.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
     ClientComponent,
-    CreateClientComponent
+    CreateUpdateClientComponent,
+    DeleteClientComponent
   ],
   imports: [
     CommonModule,
@@ -34,6 +37,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatSelectModule,
     MatButtonModule,
     MatSnackBarModule,
+    MatIconModule,
 
     SharedModule
   ],

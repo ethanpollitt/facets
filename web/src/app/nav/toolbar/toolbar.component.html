@@ -3,9 +3,8 @@
     {{ title }}
     <div *ngIf="subtitle">{{ subtitle }}</div>
   </div>
-  <div fxFlex></div>
-  <div fxFlex="none">
-    <div *ngFor="let button of buttons">
+  <div fxFlex fxLayoutAlign="end center">
+    <div fxFlex="none" *ngFor="let button of buttons">
       <button *ngIf="button.type === 'icon'" mat-icon-button [matTooltip]="button.tooltip" [color]="button.color" (click)="button.action()">
         <mat-icon class="lg-icon zoom">{{ button.icon }}</mat-icon>
       </button>
