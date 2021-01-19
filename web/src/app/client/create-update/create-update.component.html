@@ -49,14 +49,14 @@
     <div>
       <mat-form-field appearance="outline" class="input">
         <mat-label>Zip Code</mat-label>
-        <input matInput [formControl]="form.controls.zipCode">
-        <mat-error *ngIf="form.controls.zipCode.invalid && form.controls.zipCode.touched">Invalid zip code</mat-error>
+        <input matInput [formControl]="form.controls.zip">
+        <mat-error *ngIf="form.controls.zip.invalid && form.controls.zip.touched">Invalid zip code</mat-error>
       </mat-form-field>
     </div>
     <div>
       <mat-label>Square Customer</mat-label>
       <div>
-        <mat-radio-group class="input" [formControl]="form.controls.isSqrCust">
+        <mat-radio-group class="input" [formControl]="form.controls.squareCust">
           <div class="radio-btn-container">
             <mat-radio-button [value]="true">YES</mat-radio-button>
           </div>

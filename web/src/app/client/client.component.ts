@@ -77,6 +77,7 @@ export class ClientComponent implements OnInit {
           this.clients = this.clients.filter(_ => _.id !== client.id);
         this.clients.push(_);
         this.clients.sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+        this.buildAddresses();
       }
     });
   }

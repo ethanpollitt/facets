@@ -1,9 +1,9 @@
-import { Component, OnInit, Inject, Input } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, throwMatDialogContentAlreadyAttachedError } from '@angular/material/dialog';
+import { Component, OnInit, Inject } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ClientService } from '../client.service';
 import { Client } from '../client.model';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-client-create-update',
@@ -19,8 +19,8 @@ export class CreateUpdateClientComponent implements OnInit {
     streetAddr: new FormControl(null),
     city: new FormControl(null),
     state: new FormControl(null),
-    zipCode: new FormControl(null, Validators.pattern('([0-9]{5}[- ]?)?([0-9]{5})')),
-    isSqrCust: new FormControl(false)
+    zip: new FormControl(null, Validators.pattern('([0-9]{5}[- ]?)?([0-9]{5})')),
+    squareCust: new FormControl(false)
   });
 
   constructor(
