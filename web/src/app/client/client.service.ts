@@ -17,7 +17,22 @@ export class ClientService {
 
   getClients = (): Observable<Client[]> => {
     const url = this.baseUrl;
-    return this.http.get<Client[]>(url).pipe(
+    return this.http.get<Client[]>(url, { observe: "response" }).pipe(
+      map(_ => {
+        if (_.status >= 200 && _.status < 300) {
+          try {
+            const clients: Client[] = [];
+            _.body.forEach(_ => {
+              clients.push(new Client(_));
+            });
+            return clients;
+          } catch(e) {
+            console.error(e);
+          }
+          return _.body;
+        }
+        return null;
+      }),
       catchError(this.handleError)
     );
   }
@@ -27,7 +42,7 @@ export class ClientService {
     return this.http.post(url, client, { observe: "response" }).pipe(
       map(_ => {
         if (_.status >= 200 && _.status < 300)
-          return new Client(_.body);
+          return new Client(_.body as any);
         return null;
       }),
       catchError(this.handleError)
@@ -43,7 +58,7 @@ export class ClientService {
     return this.http.put(url, client, { observe: "response" }).pipe(
       map(_ => {
         if (_.status >= 200 && _.status < 300)
-          return new Client(_.body);
+          return new Client(_.body as any);
         return null;
       }),
       catchError(this.handleError)

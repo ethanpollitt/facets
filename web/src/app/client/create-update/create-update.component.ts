@@ -1,9 +1,11 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, ViewChild } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ClientService } from '../client.service';
 import { Client } from '../client.model';
+import { AddressComponent } from 'src/app/shared/components/address/address.component';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-client-create-update',
@@ -11,15 +13,21 @@ import { Client } from '../client.model';
   styleUrls: ['./create-update.component.scss']
 })
 export class CreateUpdateClientComponent implements OnInit {
+  @ViewChild('serviceAddress')
+  serviceAddress: AddressComponent;
+  @ViewChild('billingAddress')
+  billingAddress: AddressComponent;
+
+  sameAddr: boolean = false;
   currentClient: Client;
+  addressValid: boolean = true;
   form: FormGroup = new FormGroup({
+    type: new FormControl(null, [Validators.required]),
     firstName: new FormControl(null, Validators.required),
     lastName: new FormControl(null, Validators.required),
-    phoneNum: new FormControl(null, [Validators.pattern('(([\+]?[0-9][- ]?)?([\(]?[0-9]{3}[\)]?[- ]?))?([0-9]{3}[- ]?)([0-9]{4})'), Validators.required]),
-    streetAddr: new FormControl(null),
-    city: new FormControl(null),
-    state: new FormControl(null),
-    zip: new FormControl(null, Validators.pattern('([0-9]{5}[- ]?)?([0-9]{5})')),
+    primaryPhoneNum: new FormControl(null, [Validators.pattern('(([\+]?[0-9][- ]?)?([\(]?[0-9]{3}[\)]?[- ]?))?([0-9]{3}[- ]?)([0-9]{4})'), Validators.required]),
+    secondaryPhoneNum: new FormControl(null, [Validators.pattern('(([\+]?[0-9][- ]?)?([\(]?[0-9]{3}[\)]?[- ]?))?([0-9]{3}[- ]?)([0-9]{4})')]),
+    email: new FormControl(null, [Validators.email]),
     squareCust: new FormControl(false)
   });
 
@@ -48,8 +56,27 @@ export class CreateUpdateClientComponent implements OnInit {
     this.dialogRef.close(false);
   }
 
+  onServiceAddressChange = (event: Event): void => {
+    this.addressValid = this.serviceAddress.isValid() && (this.sameAddr || this.billingAddress.isValid());
+    if (this.sameAddr)
+      this.billingAddress.address = this.serviceAddress.getValue();
+  }
+
+  onBillingAddressChange = (event: Event): void => {
+    this.addressValid = this.serviceAddress.isValid() && (this.sameAddr || this.billingAddress.isValid());
+  }
+
+  sameAddrCheck = (event: MatCheckboxChange): void => {
+    this.sameAddr = event.checked;
+    if (this.sameAddr)
+      this.billingAddress.address = this.serviceAddress.getValue();
+  }
+
   private create = (): void => {    
     const client: Client = new Client(this.form.getRawValue());
+    client.serviceAddr = this.serviceAddress.getValue();
+    client.billingAddr = this.billingAddress.getValue();
+
     this.clientService.createClient(client).subscribe(_ => {
       if (_) {
         this.snackBar.open('Client created!', null, { duration: 5000, horizontalPosition: 'end' });
@@ -62,15 +89,17 @@ export class CreateUpdateClientComponent implements OnInit {
   }
 
   private update = (): void => {
-    const newClient: Client = new Client(this.form.getRawValue());
+    const client: Client = new Client(this.form.getRawValue());
+    client.serviceAddr = this.serviceAddress.getValue();
+    client.billingAddr = this.billingAddress.getValue();
 
     // Compare the clients, return if equal
-    if (newClient.isEqual(this.currentClient))
+    if (client.isEqual(this.currentClient))
       return;
 
     // Set ID on new client object & send
-    newClient.id = this.currentClient.id;
-    this.clientService.updateClient(newClient).subscribe(_ => {
+    client.id = this.currentClient.id;
+    this.clientService.updateClient(client).subscribe(_ => {
       if (_) {
         this.snackBar.open(`Client ${this.currentClient.id} updated!`, null, { duration: 5000, horizontalPosition: 'end' });
         this.dialogRef.close(_);

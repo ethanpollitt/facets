@@ -1,20 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { AddressDto } from 'src/address/address.model';
 
 export class ClientDto {
   @ApiProperty()
-  readonly phoneNum: string;
+  readonly type: ClientType;
+  @ApiProperty()
+  readonly primaryPhoneNum: string;
+  @ApiProperty()
+  readonly secondaryPhoneNum: string;
   @ApiProperty()
   readonly firstName: string;
   @ApiProperty()
   readonly lastName: string;
   @ApiProperty()
-  readonly streetAddr: string;
+  readonly email: string;
   @ApiProperty()
-  readonly city: string;
+  readonly serviceAddr: AddressDto;
   @ApiProperty()
-  readonly state: string;
-  @ApiProperty()
-  readonly zip: string;
+  readonly billingAddr: AddressDto;
   @ApiProperty()
   readonly squareCust: boolean;
+}
+
+export enum ClientType {
+  RES = 'RES',
+  COM = 'COM'
 }

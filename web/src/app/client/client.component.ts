@@ -16,7 +16,7 @@ import { DeleteClientComponent } from './delete/delete.component';
 export class ClientComponent implements OnInit {
   clients: Client[];
   selected: number[] = [];
-  addresses: Map<number, string>;
+  addresses: Map<number, { sa: string, ba: string }>;
 
   constructor(
     private dialog: MatDialog,
@@ -99,12 +99,9 @@ export class ClientComponent implements OnInit {
   }
 
   private buildAddresses = (): void => {
-    this.addresses = new Map<number, string>();
-    this.clients.forEach(_ => {
-      let addr = _.streetAddr + ', ' + _.city + ', ' + _.state;
-      if (_.zip)
-        addr += ' ' + _.zip;
-      this.addresses.set(_.id, addr);
+    this.addresses = new Map<number, { sa: string, ba: string }>();
+    this.clients.forEach((_: Client) => {
+      this.addresses.set(_.id, { sa: _.serviceAddr.toString(), ba: _.billingAddr.toString() });
     });
   }
 }

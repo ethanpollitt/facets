@@ -15,6 +15,9 @@
     }
   ],
   "compilerOptions": {
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+  },
+  "angularCompilerOptions": {
+    "enableIvy": false
   }
 }

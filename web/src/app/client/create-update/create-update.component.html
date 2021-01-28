@@ -3,6 +3,17 @@
   <form [formGroup]="form">
     <div>
       <mat-form-field appearance="outline" class="input">
+        <mat-label>Type</mat-label>
+        <mat-select  [formControl]="form.controls.type">
+          <mat-option disabled [value]="null">Select One</mat-option>
+          <mat-option value="RES">Residential</mat-option>
+          <mat-option value="COM">Commercial</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.controls.type.invalid && form.controls.type.touched">Must select a type</mat-error>
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field appearance="outline" class="input">
         <mat-label>First Name</mat-label>
         <input matInput [formControl]="form.controls.firstName" required>
         <mat-error *ngIf="form.controls.firstName.invalid && form.controls.firstName.touched">Invalid first name</mat-error>
@@ -17,40 +28,23 @@
     </div>
     <div>
       <mat-form-field appearance="outline" class="input">
-        <mat-label>Phone Number</mat-label>
-        <input matInput type="tel" [formControl]="form.controls.phoneNum" required>
-        <mat-error *ngIf="form.controls.phoneNum.invalid && form.controls.phoneNum.touched">Invalid phone number</mat-error>
+        <mat-label>Primary Phone Number</mat-label>
+        <input matInput type="tel" [formControl]="form.controls.primaryPhoneNum" required>
+        <mat-error *ngIf="form.controls.primaryPhoneNum.invalid && form.controls.primaryPhoneNum.touched">Invalid phone number</mat-error>
       </mat-form-field>
     </div>
     <div>
       <mat-form-field appearance="outline" class="input">
-        <mat-label>Street Address</mat-label>
-        <input matInput [formControl]="form.controls.streetAddr">
-        <mat-error *ngIf="form.controls.streetAddr.invalid && form.controls.streetAddrtouched">Invalid street address</mat-error>
+        <mat-label>Secondary Phone Number</mat-label>
+        <input matInput type="tel" [formControl]="form.controls.secondaryPhoneNum">
+        <mat-error *ngIf="form.controls.secondaryPhoneNum.invalid && form.controls.secondaryPhoneNum.touched">Invalid phone number</mat-error>
       </mat-form-field>
     </div>
     <div>
       <mat-form-field appearance="outline" class="input">
-        <mat-label>City</mat-label>
-        <input matInput [formControl]="form.controls.city">
-        <mat-error *ngIf="form.controls.city.invalid && form.controls.city.touched">Invalid city</mat-error>
-      </mat-form-field>
-    </div>
-    <div>
-      <mat-form-field appearance="outline" class="input">
-        <mat-label>Select an option</mat-label>
-        <mat-select  [formControl]="form.controls.state">
-          <mat-option disabled [value]="null">Select One</mat-option>
-          <mat-option value="FL">Florida</mat-option>
-        </mat-select>
-        <mat-error *ngIf="form.controls.state.invalid && form.controls.state.touched">Invalid state</mat-error>
-      </mat-form-field>
-    </div>
-    <div>
-      <mat-form-field appearance="outline" class="input">
-        <mat-label>Zip Code</mat-label>
-        <input matInput [formControl]="form.controls.zip">
-        <mat-error *ngIf="form.controls.zip.invalid && form.controls.zip.touched">Invalid zip code</mat-error>
+        <mat-label>Email</mat-label>
+        <input matInput type="email" [formControl]="form.controls.email">
+        <mat-error *ngIf="form.controls.email.invalid && form.controls.email.touched">Invalid email address</mat-error>
       </mat-form-field>
     </div>
     <div>
@@ -66,12 +60,21 @@
         </mat-radio-group>
       </div>
     </div>
+    <mat-divider></mat-divider>
+    <div>
+      <h3>Service Address</h3>
+      <app-address #serviceAddress (change)="onServiceAddressChange($event)"></app-address>
+      <mat-divider [inset]="true"></mat-divider>
+      <h3>Billing Address</h3>
+      <mat-checkbox (change)="sameAddrCheck($event)">Same as Serivce Address</mat-checkbox>
+      <app-address #billingAddress [disabled]="sameAddr" (change)="onBillingAddressChange($event)"></app-address>
+    </div>
   </form>
 </div>
 <div mat-dialog-actions>
   <div fxFlexFill fxLayout="row" fxFlexAlign="end center">
     <button fxFlex="none" mat-stroked-button color="accent" (click)="close()">Cancel</button>
     <div fxFlex></div>
-    <button fxFlex="none" mat-stroked-button color="primary" [disabled]="form.invalid" (click)="submit()">Submit</button>
+    <button fxFlex="none" mat-stroked-button color="primary" [disabled]="form.invalid || !addressValid" (click)="submit()">Submit</button>
   </div>
 </div>

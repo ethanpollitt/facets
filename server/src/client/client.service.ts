@@ -41,7 +41,8 @@ export class ClientService {
   }
 
   update = async (id: number, clientDto: ClientDto): Promise<Client> => {
-    return this.clientModel.findOneAndUpdate({ id: id }, clientDto, { new: true }).exec();
+    const newClient = new this.clientModel(clientDto);
+    return this.clientModel.findOneAndUpdate({ id: id }, newClient, { new: true }).exec();
   }
 
   delete = async (id: number): Promise<void> => {

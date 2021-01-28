@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Put, Post, NotFoundException, ParseIntPipe, Body, Delete } from '@nestjs/common';
+import { Controller, Get, Param, Put, Post, NotFoundException, ParseIntPipe, Body, Delete, ValidationPipe, UsePipes } from '@nestjs/common';
 
 import { ClientService } from './client.service';
 import { Client } from './client.schema';
@@ -22,6 +22,7 @@ export class ClientController {
   }
 
   @Post()
+  @UsePipes(new ValidationPipe({ transform: true }))
   createClient(@Body() clientDto: ClientDto): Promise<Client> {
     return this.clientService.create(clientDto);
   }
