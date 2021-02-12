@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-import {BreakpointObserver, Breakpoints, BreakpointState} from '@angular/cdk/layout';
+import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
+import { Device } from './shared/models/device';
+import { AppService } from './app.service';
 
 
 @Component({
@@ -10,10 +12,13 @@ import {BreakpointObserver, Breakpoints, BreakpointState} from '@angular/cdk/lay
 export class AppComponent {
   title = 'web';
   margin: string = 'margin: 0px;';
-  isMobile: boolean = false;
+  device: Device;
 
-  constructor(breakpointObserver: BreakpointObserver) {
-    breakpointObserver.observe([
+  constructor(
+    private appService: AppService,
+    private breakpointObserver: BreakpointObserver  
+  ) {
+    this.breakpointObserver.observe([
       Breakpoints.HandsetPortrait,
       Breakpoints.HandsetLandscape,
       Breakpoints.TabletPortrait,
@@ -23,28 +28,29 @@ export class AppComponent {
     ]).subscribe((state: BreakpointState) => {
       if (state.breakpoints[Breakpoints.HandsetPortrait]) {
         this.setMobileMargin();
-        this.isMobile = true;
+        this.device = new Device('mobile');
       }
       if (state.breakpoints[Breakpoints.HandsetLandscape]) {
         this.setMobileMargin();
-        this.isMobile = true;
+        this.device = new Device('mobile');
       }
       if (state.breakpoints[Breakpoints.TabletPortrait]) {
         this.setMobileMargin();
-        this.isMobile = true;
+        this.device = new Device('tablet');
       }
       if (state.breakpoints[Breakpoints.TabletLandscape]) {
         this.setWebMargin();
-        this.isMobile = false;
+        this.device = new Device('desktop');
       }
       if (state.breakpoints[Breakpoints.WebPortrait]) {
         this.setWebMargin();
-        this.isMobile = false;
+        this.device = new Device('desktop');
       }
       if (state.breakpoints[Breakpoints.WebLandscape]) {
         this.setWebMargin();
-        this.isMobile = false;
+        this.device = new Device('desktop');
       }
+      this.appService.setDevice(this.device);
     });
   }
 

@@ -1,23 +1,44 @@
-<div *ngIf="clients">
+<div *ngIf="clients" style="min-width: 800px;">
   <mat-card class="card-header no-bottom-radius" fxLayout="row" fxLayoutAlign="start center">
     <!-- <div fxFlex="5%">Cust. ID</div> -->
     <div fxFlex="20%">Full Name</div>
     <div fxFlex="4%">Type</div>
-    <div fxFlex="8%">Primary Tel.</div>
-    <div fxFlex="8%">Secondary Tel.</div>
+    <div fxFlex="8%">Primary Tel</div>
+    <div fxFlex="8%">Secondary Tel</div>
     <div fxFlex="13%">Email</div>
-    <div fxFlex="27%">Service Address</div>
-    <div fxFlex="27%">Billing Address</div>
-    <div fxFlex="3%">Square Cust.</div>
+    <div fxFlex="27%">Service Addr</div>
+    <div fxFlex="27%">Billing Addr</div>
+    <div fxFlex="3%">Square Cust</div>
   </mat-card>
   <mat-card class="selectable" *ngFor="let c of clients; index as i; last as isLast" (click)="onRowClick(i)"
       [class]="{ 'no-radius': !isLast, 'no-top-radius': isLast, 'selected': selected.includes(i), 'selectable': !selected.includes(i) }">
     <!-- <div fxFlex="5%">{{ c.id }}</div> -->
     <div fxFlex="20%">{{ c.firstName }} {{ c.lastName }}</div>
     <div fxFlex="4%">{{ c.type }}</div>
-    <div fxFlex="8%"><a href="tel:{{ c.primaryPhoneNum }}">{{ c.primaryPhoneNum }}</a></div>
-    <div fxFlex="8%"><a href="tel:{{ c.secondaryPhoneNum }}">{{ c.secondaryPhoneNum }}</a></div>
-    <div fxFlex="13%">{{ c.email }}</div>
+    <div fxFlex="8%">
+      <ng-container *ngIf="c.primaryPhoneNum && device.isDesktop">
+        <a href="tel:{{ c.primaryPhoneNum }}" (click)="$event.stopPropagation();">{{ c.primaryPhoneNum }}</a>
+      </ng-container>
+      <ng-container *ngIf="c.primaryPhoneNum && (device.isTablet || device.isMobile)">
+        <a href="tel:{{ c.primaryPhoneNum }}" (click)="$event.stopPropagation();"><mat-icon>phone</mat-icon></a>
+      </ng-container>
+    </div>
+    <div fxFlex="8%">
+      <ng-container *ngIf="c.secondaryPhoneNum && device.isDesktop">
+        <a href="tel:{{ c.secondaryPhoneNum }}" (click)="$event.stopPropagation();">{{ c.secondaryPhoneNum }}</a>
+      </ng-container>
+      <ng-container *ngIf="c.secondaryPhoneNum && (device.isTablet || device.isMobile)">
+        <a href="tel:{{ c.secondaryPhoneNum }}" (click)="$event.stopPropagation();"><mat-icon>phone</mat-icon></a>
+      </ng-container>
+    </div>
+    <div fxFlex="13%">
+      <ng-container *ngIf="c.email && device.isDesktop">
+        {{ c.email }}
+      </ng-container>
+      <ng-container *ngIf="c.email &&  (device.isTablet || device.isMobile)">
+        <a href="mailto:{{ c.email }}" (click)="$event.stopPropagation();"><mat-icon>email</mat-icon></a>
+      </ng-container>
+    </div>
     <div fxFlex="27%">
       <a target="_blank" href="https://www.google.com/maps/search/?api=1&query={{ addresses.get(c.id).sa | encodeUri }}">
         {{ addresses.get(c.id)['sa'] }}

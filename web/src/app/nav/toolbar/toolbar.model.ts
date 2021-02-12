@@ -6,14 +6,14 @@ export class ToolbarOptions {
   buttons?: ButtonOptionsBase[];
 }
 
-export type ButtonType = 'base' | 'icon' | 'text' | 'menu';
+export type ButtonType = 'base' | 'icon' | 'text' | 'menu' | 'fab';
 export type ButtonColor = 'primary' | 'accent' | 'default';
 
 export class ButtonOptionsBase {
   private _action: Function;
   private _color: ButtonColor;
   private _tooltip?: string;
-  protected _type: string = 'base';
+  protected _type: ButtonType = 'base';
 
   constructor(action: Function, color: ButtonColor, tooltip?: string) {
     this._action = action;
@@ -22,7 +22,7 @@ export class ButtonOptionsBase {
       this._tooltip = tooltip;
   }
 
-  get type(): string {
+  get type(): ButtonType {
     return this._type;
   }
 
@@ -40,7 +40,7 @@ export class ButtonOptionsBase {
 }
 
 export class IconButtonOptions extends ButtonOptionsBase {
-  private _icon: string;
+  protected _icon: string;
 
   constructor(action: Function, color: ButtonColor, icon: string, tooltip?: string) {
     super(action, color, tooltip);
@@ -51,6 +51,13 @@ export class IconButtonOptions extends ButtonOptionsBase {
 
   get icon(): string {
     return this._icon;
+  }
+}
+
+export class IconFabOptions extends IconButtonOptions {
+  constructor(action: Function, color: ButtonColor, icon: string, tooltip?: string) {
+    super(action, color, icon, tooltip);
+    this._type = 'fab';
   }
 }
 

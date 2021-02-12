@@ -1,22 +1,3 @@
-<mat-toolbar class="mat-elevation-z2">
-  <div fxFlex *ngIf="title">
-    {{ title }}
-    <div *ngIf="subtitle">{{ subtitle }}</div>
-  </div>
-  <div fxFlex fxLayoutAlign="end center">
-    <div fxFlex="none" *ngFor="let button of buttons">
-      <button *ngIf="button.type === 'icon'" mat-icon-button [matTooltip]="button.tooltip" [color]="button.color" (click)="button.action()">
-        <mat-icon class="lg-icon zoom">{{ button.icon }}</mat-icon>
-      </button>
-      <button *ngIf="button.type === 'text'" mat-icon-button [matTooltip]="button.tooltip" [color]="button.color" (click)="button.action()">
-        {{ button.text }}
-      </button>
-      <button *ngIf="button.type === 'menu'" mat-icon-button [matMenuTriggerFor]="button.trigger" [matTooltip]="button.tooltip" [color]="button.color">
-        <mat-icon class="lg-icon">more-vert</mat-icon>
-      </button>
-    </div>
-    <!-- <button mat-icon-button matTooltip="Add new Client" color="accent">
-      <mat-icon class="lg-icon zoom">add_circle_outline</mat-icon>
-    </button> -->
-  </div>
-</mat-toolbar>
+<app-desktop-toolbar *ngIf="device.isDesktop" [title]="title" [subtitle]="subtitle" [buttons]="buttons"></app-desktop-toolbar>
+<app-tablet-toolbar *ngIf="device.isTablet" [title]="title" [subtitle]="subtitle" [buttons]="buttons"></app-tablet-toolbar>
+<app-mobile-toolbar *ngIf="device.isMobile" [title]="title" [subtitle]="subtitle" [buttons]="buttons"></app-mobile-toolbar>

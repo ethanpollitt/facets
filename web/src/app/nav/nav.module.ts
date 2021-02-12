@@ -12,12 +12,18 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { RailComponent } from './rail/rail.component';
 import { ToolbarComponent } from './toolbar/toolbar.component';
 import { ToolbarService } from './toolbar/toolbar.service';
+import { MobileToolbarComponent } from './toolbar/mobile-toolbar/mobile-toolbar.component';
+import { DesktopToolbarComponent } from './toolbar/desktop-toolbar/desktop-toolbar.component';
+import { TabletToolbarComponent } from './toolbar/tablet-toolbar/tablet-toolbar.component';
 
 @NgModule({
   declarations: [
     FooterComponent,
     RailComponent,
-    ToolbarComponent
+    ToolbarComponent,
+    MobileToolbarComponent,
+    DesktopToolbarComponent,
+    TabletToolbarComponent
   ],
   imports: [
     CommonModule,
@@ -35,7 +41,8 @@ import { ToolbarService } from './toolbar/toolbar.service';
   exports: [
     FooterComponent,
     RailComponent,
-    ToolbarComponent
+    ToolbarComponent,
+    MobileToolbarComponent
   ]
 })
 export class NavModule { }

@@ -1,0 +1,28 @@
+<mat-toolbar>
+  <div class="w-100" fxLayout="row" fxLayoutAlign="end center">
+    <div fxFlex="none">
+      <mat-menu #menu="matMenu">
+        <ng-template matMenuContent>
+          <a mat-menu-item href="/clients">Clients</a>
+        </ng-template>
+      </mat-menu>
+      
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <mat-icon color="accent">more_vert</mat-icon>
+        <img width="16px" height="16px" src="../../../assets/img/ruby.png" />
+      </button>
+    </div>
+    <div fxFlex></div>
+    <div fxFlex="none" *ngFor="let button of buttons" class="mh1">
+      <button *ngIf="button.type === 'icon'" mat-mini-fab class="relative bottom-1-6" [matTooltip]="button.tooltip" [color]="button.color" (click)="button.action()">
+        <mat-icon>{{ button.icon }}</mat-icon>
+      </button>
+      <button *ngIf="button.type === 'text'" mat-button [matTooltip]="button.tooltip" [color]="button.color" (click)="button.action()">
+        {{ button.text }}
+      </button>
+      <button *ngIf="button.type === 'menu'" mat-icon-button [matMenuTriggerFor]="button.trigger" [matTooltip]="button.tooltip" [color]="button.color">
+        <mat-icon>{{ button?.icon || 'more-vert'}}</mat-icon>
+      </button>
+    </div>
+  </div>
+</mat-toolbar>

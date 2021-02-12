@@ -1,7 +1,7 @@
-<ng-container *ngIf="!isMobile">
+<ng-container *ngIf="device.isDesktop">
   <app-rail>
     <div fxFlexFill fxLayout="column">
-      <app-toolbar></app-toolbar>
+      <app-toolbar [device]="device"></app-toolbar>
 
       <div fxFlex [style]="margin">
         <router-outlet></router-outlet>
@@ -11,12 +11,25 @@
     </div>
   </app-rail>
 </ng-container>
-<ng-container *ngIf="isMobile">
-  <div fxFlexFill fxLayout="column">
-    <app-toolbar></app-toolbar>
+<ng-container *ngIf="device.isTablet">
+  <app-rail>
+    <div fxFlexFill fxLayout="column">
+      <app-toolbar [device]="device"></app-toolbar>
 
-    <div fxFlex [style]="margin">
+      <div fxFlex [style]="margin">
+        <router-outlet></router-outlet>
+      </div>
+
+      <app-footer></app-footer>
+    </div>
+  </app-rail>
+</ng-container>
+<ng-container *ngIf="device.isMobile">
+  <div fxFlexFill fxLayout="column">
+    <div fxFlex [style]="margin" class="overflow-x-scroll">
       <router-outlet></router-outlet>
     </div>
+
+    <app-toolbar [device]="device"></app-toolbar>
   </div>
 </ng-container>

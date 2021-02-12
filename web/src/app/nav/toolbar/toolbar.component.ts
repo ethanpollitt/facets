@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ToolbarService } from './toolbar.service';
 import { ButtonOptionsBase } from './toolbar.model';
+import { Device } from '../../shared/models/device';
 
 @Component({
   selector: 'app-toolbar',
@@ -11,6 +12,7 @@ export class ToolbarComponent implements OnInit {
   title: string;
   subtitle: string;
   buttons: ButtonOptionsBase[];
+  device: Device;
 
   constructor(private toolbarService: ToolbarService) { }
 
@@ -26,5 +28,10 @@ export class ToolbarComponent implements OnInit {
       if (_.buttons)
         this.buttons = _.buttons;
     });
+  }
+
+  @Input('device')
+  set _device(device: Device) {
+    this.device = device;
   }
 }

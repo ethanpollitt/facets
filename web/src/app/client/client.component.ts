@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 
+import { AppService } from '../app.service';
 import { ClientService } from './client.service';
 import { Client } from './client.model';
 import { ToolbarService } from '../nav/toolbar/toolbar.service';
 import { ToolbarOptions, IconButtonOptions } from '../nav/toolbar/toolbar.model';
 import { CreateUpdateClientComponent } from './create-update/create-update.component';
 import { DeleteClientComponent } from './delete/delete.component';
+import { Device } from '../shared/models/device';
 
 @Component({
   selector: 'app-client',
@@ -17,12 +19,18 @@ export class ClientComponent implements OnInit {
   clients: Client[];
   selected: number[] = [];
   addresses: Map<number, { sa: string, ba: string }>;
+  device: Device;
 
   constructor(
     private dialog: MatDialog,
     private clientService: ClientService,
-    private toolbarService: ToolbarService
-  ) { }
+    private toolbarService: ToolbarService,
+    private appService: AppService
+  ) {
+    this.appService.deviceUpdates.subscribe(_ => {
+      this.device = _;
+    })
+  }
 
   ngOnInit(): void {
     this.setBtns({ add: true });
