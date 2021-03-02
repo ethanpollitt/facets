@@ -1,5 +1,5 @@
-<div *ngIf="clients" class="client-container">
-  <mat-table class="all-radius table" [dataSource]="clients">
+<div *ngIf="hasClients" class="client-container">
+  <mat-table class="all-radius table" [dataSource]="dataSource">
     <ng-container matColumnDef="fullName">
       <mat-header-cell *matHeaderCellDef class="header-cell">Full Name</mat-header-cell>
       <mat-cell *matCellDef="let client" class="row-cell">{{ client.firstName }} {{ client.lastName }}</mat-cell>
@@ -75,4 +75,4 @@
     <mat-footer-row class="bottom-radius footer" *matFooterRowDef="columnsToDisplay"></mat-footer-row>
   </mat-table>
 </div>
-<div *ngIf="!clients">No clients found!</div>
+<div *ngIf="!hasClients">No clients found!</div>

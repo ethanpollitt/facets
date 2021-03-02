@@ -28,6 +28,8 @@ export class AddressComponent implements AfterViewInit {
 
   @Input()
   set address(address: Address) {
+    if (!address)
+      return;
     this.form.controls.streetAddr.setValue(address.streetAddr);
     this.form.controls.city.setValue(address.city);
     this.form.controls.state.setValue(address.state);

@@ -10,6 +10,7 @@ import { CreateUpdateClientComponent } from './create-update/create-update.compo
 import { DeleteClientComponent } from './delete/delete.component';
 import { Device } from '../shared/models/device';
 import { ClientDetailComponent } from './detail/detail.component';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'app-client',
@@ -17,12 +18,14 @@ import { ClientDetailComponent } from './detail/detail.component';
   styleUrls: ['./client.component.scss']
 })
 export class ClientComponent implements OnInit {
-  clients: Client[];
+  hasClients: boolean = false;
   selected: number[] = [];
   addresses: Map<number, { sa: string, ba: string }>;
   device: Device;
   displayedFields: string[] = [];
+  dataSource: MatTableDataSource<Client>;
 
+  private clients: Client[];
   private allFields: string[] = ["fullName", "type", "primaryTel", "secondaryTel", "email", "serviceAddr", "billingAddr", "processor"];
   private tabletFields: string[] = ["fullName", "type", "primaryTel"];
   private mobileFields: string[] = ["fullName", "type", "primaryTel"];
@@ -35,16 +38,20 @@ export class ClientComponent implements OnInit {
   ) {
     this.appService.deviceUpdates.subscribe(_ => {
       this.device = _;
-    })
+    });
   }
 
   ngOnInit(): void {
     this.setBtns({ add: true });
 
     const s = this.clientService.getClients().subscribe(_ => {
+      // Set internal clients object & initialize data source
       this.clients = _;
+      this.hasClients = this.clients.length > 0;
+      this.dataSource = new MatTableDataSource<Client>(this.clients);
+
       this.buildAddresses();
-      this.buildTable();
+      this.setDisplayedFields();
       s.unsubscribe();
     });
   }
@@ -94,6 +101,7 @@ export class ClientComponent implements OnInit {
           this.clients = this.clients.filter(_ => _.id !== client.id);
         this.clients.push(_);
         this.clients.sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+        this.afterClientsChange();
         this.buildAddresses();
       }
     });
@@ -110,8 +118,10 @@ export class ClientComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(_ => {
       console.log(`The delete dialog was closed`);
-      if (_)
+      if (_) {
         this.clients = this.clients.filter(_ => _.id !== client.id);
+        this.afterClientsChange();
+      }
     });
   }
 
@@ -136,7 +146,13 @@ export class ClientComponent implements OnInit {
     });
   }
 
-  private buildTable = (): void => {
+  private afterClientsChange = (): void => {
+    this.hasClients = this.clients.length > 0;
+    this.dataSource.data = this.clients;
+    this.dataSource._updateChangeSubscription();
+  }
+
+  private setDisplayedFields = (): void => {
     if (this.device.isDesktop)
       this.displayedFields = this.allFields.map(_ => _);
     else if (this.device.isTablet)
