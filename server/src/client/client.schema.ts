@@ -13,20 +13,20 @@ export class Client extends Document {
   type: string;
   @Prop({ required: true })
   primaryPhoneNum: string;
-  @Prop({ required: false })
+  @Prop()
   secondaryPhoneNum: string;
   @Prop({ required: true })
   firstName: string;
   @Prop({ required: true })
   lastName: string;
-  @Prop({ required: false })
+  @Prop()
   email: string;
   @Prop({ type: { type: Types.EmbeddedDocument, ref: 'AddressSchema' } })
   serviceAddr: Address;
   @Prop({ type: { type: Types.EmbeddedDocument, ref: 'AddressSchema' } })
   billingAddr: Address;
-  @Prop({ required: true, default: false})
-  squareCust: boolean;
+  @Prop()
+  processor: string[];
 }
 
 export const ClientSchema = SchemaFactory.createForClass(Client);

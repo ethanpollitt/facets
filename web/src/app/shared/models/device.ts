@@ -41,7 +41,7 @@ export class Device {
     return this._type === 'desktop';
   }
 
-  static infer = (): Device => {
+  static infer(): Device {
     let deviceType: DeviceType;
     if (window.innerWidth > 599)
       deviceType = 'tablet';

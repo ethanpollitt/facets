@@ -1,0 +1,55 @@
+<h1 mat-dialog-title>Client Details</h1>
+<div mat-dialog-content>
+  <div class="detail-row" fxLayout="row" fxFlexAlign="start center">
+    <div class="row-label" fxFlex="40%">First Name: </div>
+    <div fxFlex="60%">{{ client.firstName }}</div>
+  </div>
+  <div class="detail-row" fxLayout="row" fxFlexAlign="start center">
+    <div class="row-label" fxFlex="40%">Last Name: </div>
+    <div fxFlex="60%">{{ client.lastName }}</div>
+  </div>
+  <div *ngIf="client.primaryPhoneNum" class="detail-row" fxLayout="row" fxFlexAlign="start center">
+    <div class="row-label" fxFlex="40%">Primary Phone Number: </div>
+    <div fxFlex="60%">
+      <a href="tel:{{ client.primaryPhoneNum }}" (click)="$event.stopPropagation();">{{ client.primaryPhoneNum }}</a>
+    </div>
+  </div>
+  <div *ngIf="client.secondaryPhoneNum" class="detail-row" fxLayout="row" fxFlexAlign="start center">
+    <div class="row-label" fxFlex="40%">Secondary Phone Num: </div>
+    <div fxFlex="60%">
+      <a href="tel:{{ client.secondaryPhoneNum }}" (click)="$event.stopPropagation();">{{ client.secondaryPhoneNum }}</a>
+    </div>
+  </div>
+  <div *ngIf="client.email" class="detail-row" fxLayout="row" fxFlexAlign="start center">
+    <div class="row-label" fxFlex="40%">Email: </div>
+    <div fxFlex="60%">
+      <a href="mailto:{{ client.email }}" (click)="$event.stopPropagation();">{{ client.email }}</a>
+    </div>
+  </div>
+  <div *ngIf="client.serviceAddr" class="detail-row" fxLayout="row" fxFlexAlign="start center">
+    <div class="row-label" fxFlex="40%">Service Address: </div>
+    <div fxFlex="60%">
+      <a target="_blank" href="https://www.google.com/maps/search/?api=1&query={{ client.serviceAddr | encodeUri }}">
+        {{ client.serviceAddr }}
+      </a>
+    </div>
+  </div>
+  <div *ngIf="client.billingAddr" class="detail-row" fxLayout="row" fxFlexAlign="start center">
+    <div class="row-label" fxFlex="40%">Billing Address: </div>
+    <div fxFlex="60%">
+      <a target="_blank" href="https://www.google.com/maps/search/?api=1&query={{ client.billingAddr | encodeUri }}">
+        {{ client.billingAddr }}
+      </a>
+    </div>
+  </div>
+  <div *ngIf="client.processor" class="detail-row" fxLayout="row" fxFlexAlign="start center">
+    <div class="row-label" fxFlex="40%">Processor: </div>
+    <div fxFlex="60%">{{ client.processor.join(', ') || 'N/A'}}</div>
+  </div>
+</div>
+<div mat-dialog-actions>
+  <div fxFlexFill fxLayout="row" fxFlexAlign="end center">
+    <button fxFlex="none" mat-stroked-button color="accent" (click)="close()">Cancel</button>
+    <div fxFlex></div>
+  </div>
+</div>

@@ -12,9 +12,9 @@ export class Client extends MongooseSchemaModel {
   email: string;
   serviceAddr: Address;
   billingAddr: Address;
-  squareCust: boolean;
+  processor: string[];
 
-  public constructor(init: RequiredExceptFor<Client, 'secondaryPhoneNum' | 'email' | 'serviceAddr' | 'billingAddr' | 'squareCust'>) {
+  public constructor(init: RequiredExceptFor<Client, 'secondaryPhoneNum' | 'email' | 'serviceAddr' | 'billingAddr' | 'processor'>) {
     super(init);
     if (init) {
       this.type = init.type;
@@ -30,12 +30,14 @@ export class Client extends MongooseSchemaModel {
         this.serviceAddr = new Address(init.serviceAddr);
       if (init.billingAddr)
         this.billingAddr = new Address(init.billingAddr);
-      if (!init.squareCust)
-        this.squareCust = false;
+      if (init.processor)
+        this.processor = init.processor;
     }
   }
 
-  isEqual = (other: Client) => Object.keys(this).every(_ => this[_] === other[_]);
+  isEqual(other: Client): boolean {
+    return Object.keys(this).every(_ => this[_] === other[_]);
+  } 
 }
 
 export class Address extends MongooseSchemaModel {
@@ -50,9 +52,11 @@ export class Address extends MongooseSchemaModel {
       Object.assign(this, init);
   }
 
-  isEqual = (other: Address): boolean => Object.keys(this).every(_ => this[_] === other[_]);
+  isEqual(other: Address): boolean {
+    return Object.keys(this).every(_ => this[_] === other[_]);
+  }
 
-  toString = (): string => {
+  toString(): string {
     let address = this.streetAddr + ', ' + this.city + ', ' + this.state;
     if (this.zip)
       address += ' ' + this.zip;

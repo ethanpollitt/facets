@@ -47,7 +47,7 @@
         <mat-error *ngIf="form.controls.email.invalid && form.controls.email.touched">Invalid email address</mat-error>
       </mat-form-field>
     </div>
-    <div>
+    <!-- <div>
       <mat-label>Square Customer</mat-label>
       <div>
         <mat-radio-group class="input" [formControl]="form.controls.squareCust">
@@ -59,15 +59,15 @@
           </div>
         </mat-radio-group>
       </div>
-    </div>
+    </div> -->
     <mat-divider></mat-divider>
     <div>
       <h3>Service Address</h3>
-      <app-address #serviceAddress (change)="onServiceAddressChange($event)"></app-address>
+      <app-address #serviceAddress [address]="currentClient?.serviceAddr" (change)="onServiceAddressChange($event)"></app-address>
       <mat-divider [inset]="true"></mat-divider>
       <h3>Billing Address</h3>
-      <mat-checkbox (change)="sameAddrCheck($event)">Same as Serivce Address</mat-checkbox>
-      <app-address #billingAddress [disabled]="sameAddr" (change)="onBillingAddressChange($event)"></app-address>
+      <mat-checkbox [checked]="sameAddr" (change)="sameAddrChange($event)">Same as Serivce Address</mat-checkbox>
+      <app-address #billingAddress [address]="currentClient?.billingAddr" [disabled]="sameAddr" (change)="onBillingAddressChange($event)"></app-address>
     </div>
   </form>
 </div>

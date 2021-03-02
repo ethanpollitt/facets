@@ -19,7 +19,7 @@ export class ClientDto {
   @ApiProperty()
   readonly billingAddr: AddressDto;
   @ApiProperty()
-  readonly squareCust: boolean;
+  readonly processor: string[];
 }
 
 export enum ClientType {

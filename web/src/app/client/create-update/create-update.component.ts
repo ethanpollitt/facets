@@ -28,7 +28,7 @@ export class CreateUpdateClientComponent implements OnInit {
     primaryPhoneNum: new FormControl(null, [Validators.pattern('(([\+]?[0-9][- ]?)?([\(]?[0-9]{3}[\)]?[- ]?))?([0-9]{3}[- ]?)([0-9]{4})'), Validators.required]),
     secondaryPhoneNum: new FormControl(null, [Validators.pattern('(([\+]?[0-9][- ]?)?([\(]?[0-9]{3}[\)]?[- ]?))?([0-9]{3}[- ]?)([0-9]{4})')]),
     email: new FormControl(null, [Validators.email]),
-    squareCust: new FormControl(false)
+    // squareCust: new FormControl(false)
   });
 
   constructor(
@@ -42,6 +42,9 @@ export class CreateUpdateClientComponent implements OnInit {
     if (this.data && this.data.client) {
       this.currentClient = this.data.client;
       Object.keys(this.form.controls).forEach(_ => this.form.controls[_].setValue(this.currentClient[_]));
+      
+      // Check if addresses are same
+      this.sameAddr = this.currentClient.billingAddr.isEqual(this.currentClient.serviceAddr);
     }
   }
 
@@ -66,7 +69,7 @@ export class CreateUpdateClientComponent implements OnInit {
     this.addressValid = this.serviceAddress.isValid() && (this.sameAddr || this.billingAddress.isValid());
   }
 
-  sameAddrCheck = (event: MatCheckboxChange): void => {
+  sameAddrChange = (event: MatCheckboxChange): void => {
     this.sameAddr = event.checked;
     if (this.sameAddr)
       this.billingAddress.address = this.serviceAddress.getValue();

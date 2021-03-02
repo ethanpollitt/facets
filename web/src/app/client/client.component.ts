@@ -9,6 +9,7 @@ import { ToolbarOptions, IconButtonOptions } from '../nav/toolbar/toolbar.model'
 import { CreateUpdateClientComponent } from './create-update/create-update.component';
 import { DeleteClientComponent } from './delete/delete.component';
 import { Device } from '../shared/models/device';
+import { ClientDetailComponent } from './detail/detail.component';
 
 @Component({
   selector: 'app-client',
@@ -20,6 +21,11 @@ export class ClientComponent implements OnInit {
   selected: number[] = [];
   addresses: Map<number, { sa: string, ba: string }>;
   device: Device;
+  displayedFields: string[] = [];
+
+  private allFields: string[] = ["fullName", "type", "primaryTel", "secondaryTel", "email", "serviceAddr", "billingAddr", "processor"];
+  private tabletFields: string[] = ["fullName", "type", "primaryTel"];
+  private mobileFields: string[] = ["fullName", "type", "primaryTel"];
 
   constructor(
     private dialog: MatDialog,
@@ -38,6 +44,7 @@ export class ClientComponent implements OnInit {
     const s = this.clientService.getClients().subscribe(_ => {
       this.clients = _;
       this.buildAddresses();
+      this.buildTable();
       s.unsubscribe();
     });
   }
@@ -50,13 +57,15 @@ export class ClientComponent implements OnInit {
       this.selected = [i];
       // this.selected.push(i);
 
-    this.setBtns({ add: true, delete: this.selected.length > 0, update: this.selected.length === 1 });
+    this.setBtns({ add: true, detail: this.selected.length > 0, delete: this.selected.length > 0, update: this.selected.length === 1 });
   }
 
-  private setBtns = (btnIds: { add?: boolean, update?: boolean, delete?: boolean }): void => {
-    const newBtns: IconButtonOptions[] = []
+  private setBtns = (btnIds: { add?: boolean, update?: boolean, delete?: boolean, detail?: boolean }): void => {
+    const newBtns: IconButtonOptions[] = [];
     if (btnIds.add)
       newBtns.push(new IconButtonOptions(() => this.showCreateUpdateDiag(), 'accent', 'add_circle_outline', 'Add new Client'));
+    if (btnIds.detail)
+      newBtns.push(new IconButtonOptions(() => this.showDetailDiag(this.clients[this.selected[0]]), 'accent', 'description', `Show details on selected Client`));
     if (btnIds.update)
       newBtns.push(new IconButtonOptions(() => this.showCreateUpdateDiag(this.clients[this.selected[0]]), 'accent', 'create', 'Update selected Client'));
     if (btnIds.delete)
@@ -90,7 +99,7 @@ export class ClientComponent implements OnInit {
     });
   }
 
-  private showDeleteDiag = (client: Client): void => {    
+  private showDeleteDiag = (client: Client): void => {
     const dialogRef = this.dialog.open(DeleteClientComponent, {
       data: { client: client },
       autoFocus: true,
@@ -100,9 +109,23 @@ export class ClientComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(_ => {
-      console.log(`The dialog was closed (${client ? 'update' : 'add'})`);
+      console.log(`The delete dialog was closed`);
       if (_)
         this.clients = this.clients.filter(_ => _.id !== client.id);
+    });
+  }
+
+  private showDetailDiag = (client: Client): void => {
+    const dialogRef = this.dialog.open(ClientDetailComponent, {
+      data: { client: client },
+      autoFocus: true,
+      disableClose: true,
+      hasBackdrop: true,
+      minWidth: 320
+    });
+
+    dialogRef.afterClosed().subscribe(_ => {
+      console.log(`The detail dialog was closed`);
     });
   }
 
@@ -111,5 +134,14 @@ export class ClientComponent implements OnInit {
     this.clients.forEach((_: Client) => {
       this.addresses.set(_.id, { sa: _.serviceAddr.toString(), ba: _.billingAddr.toString() });
     });
+  }
+
+  private buildTable = (): void => {
+    if (this.device.isDesktop)
+      this.displayedFields = this.allFields.map(_ => _);
+    else if (this.device.isTablet)
+      this.displayedFields = this.tabletFields.map(_ => _);
+    else
+      this.displayedFields = this.mobileFields.map(_ => _);
   }
 }

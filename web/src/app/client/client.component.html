@@ -1,55 +1,78 @@
-<div *ngIf="clients" style="min-width: 800px;">
-  <mat-card class="card-header no-bottom-radius" fxLayout="row" fxLayoutAlign="start center">
-    <!-- <div fxFlex="5%">Cust. ID</div> -->
-    <div fxFlex="20%">Full Name</div>
-    <div fxFlex="4%">Type</div>
-    <div fxFlex="8%">Primary Tel</div>
-    <div fxFlex="8%">Secondary Tel</div>
-    <div fxFlex="13%">Email</div>
-    <div fxFlex="27%">Service Addr</div>
-    <div fxFlex="27%">Billing Addr</div>
-    <div fxFlex="3%">Square Cust</div>
-  </mat-card>
-  <mat-card class="selectable" *ngFor="let c of clients; index as i; last as isLast" (click)="onRowClick(i)"
-      [class]="{ 'no-radius': !isLast, 'no-top-radius': isLast, 'selected': selected.includes(i), 'selectable': !selected.includes(i) }">
-    <!-- <div fxFlex="5%">{{ c.id }}</div> -->
-    <div fxFlex="20%">{{ c.firstName }} {{ c.lastName }}</div>
-    <div fxFlex="4%">{{ c.type }}</div>
-    <div fxFlex="8%">
-      <ng-container *ngIf="c.primaryPhoneNum && device.isDesktop">
-        <a href="tel:{{ c.primaryPhoneNum }}" (click)="$event.stopPropagation();">{{ c.primaryPhoneNum }}</a>
-      </ng-container>
-      <ng-container *ngIf="c.primaryPhoneNum && (device.isTablet || device.isMobile)">
-        <a href="tel:{{ c.primaryPhoneNum }}" (click)="$event.stopPropagation();"><mat-icon>phone</mat-icon></a>
-      </ng-container>
-    </div>
-    <div fxFlex="8%">
-      <ng-container *ngIf="c.secondaryPhoneNum && device.isDesktop">
-        <a href="tel:{{ c.secondaryPhoneNum }}" (click)="$event.stopPropagation();">{{ c.secondaryPhoneNum }}</a>
-      </ng-container>
-      <ng-container *ngIf="c.secondaryPhoneNum && (device.isTablet || device.isMobile)">
-        <a href="tel:{{ c.secondaryPhoneNum }}" (click)="$event.stopPropagation();"><mat-icon>phone</mat-icon></a>
-      </ng-container>
-    </div>
-    <div fxFlex="13%">
-      <ng-container *ngIf="c.email && device.isDesktop">
-        {{ c.email }}
-      </ng-container>
-      <ng-container *ngIf="c.email &&  (device.isTablet || device.isMobile)">
-        <a href="mailto:{{ c.email }}" (click)="$event.stopPropagation();"><mat-icon>email</mat-icon></a>
-      </ng-container>
-    </div>
-    <div fxFlex="27%">
-      <a target="_blank" href="https://www.google.com/maps/search/?api=1&query={{ addresses.get(c.id).sa | encodeUri }}">
-        {{ addresses.get(c.id)['sa'] }}
-      </a>
-    </div>
-    <div fxFlex="27%">
-      <a target="_blank" href="https://www.google.com/maps/search/?api=1&query={{ addresses.get(c.id).ba | encodeUri }}">
-        {{ addresses.get(c.id)['ba'] }}
-      </a>
-    </div>
-    <div fxFlex="3%">{{ c.squareCust ? 'YES' : 'NO' }}</div>
-  </mat-card>
+<div *ngIf="clients" class="client-container">
+  <mat-table class="all-radius table" [dataSource]="clients">
+    <ng-container matColumnDef="fullName">
+      <mat-header-cell *matHeaderCellDef class="header-cell">Full Name</mat-header-cell>
+      <mat-cell *matCellDef="let client" class="row-cell">{{ client.firstName }} {{ client.lastName }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="type">
+      <mat-header-cell *matHeaderCellDef class="header-cell">Type</mat-header-cell>
+      <mat-cell *matCellDef="let client" class="row-cell">{{ client.type }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="primaryTel">
+      <mat-header-cell *matHeaderCellDef class="header-cell">Primary Tel</mat-header-cell>
+      <mat-cell *matCellDef="let client" class="row-cell">
+        <ng-container *ngIf="client.primaryPhoneNum && device.isDesktop">
+          <a href="tel:{{ client.primaryPhoneNum }}" (click)="$event.stopPropagation();">{{ client.primaryPhoneNum }}</a>
+        </ng-container>
+        <ng-container *ngIf="client.primaryPhoneNum && (device.isTablet || device.isMobile)">
+          <a href="tel:{{ client.primaryPhoneNum }}" (click)="$event.stopPropagation();"><mat-icon>phone</mat-icon></a>
+        </ng-container>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="secondaryTel">
+      <mat-header-cell *matHeaderCellDef class="header-cell">Secondary Tel</mat-header-cell>
+      <mat-cell *matCellDef="let client" class="row-cell">
+        <ng-container *ngIf="client.secondaryPhoneNum && device.isDesktop">
+          <a href="tel:{{ client.secondaryPhoneNum }}" (click)="$event.stopPropagation();">{{ client.secondaryPhoneNum }}</a>
+        </ng-container>
+        <ng-container *ngIf="client.secondaryPhoneNum && (device.isTablet || device.isMobile)">
+          <a href="tel:{{ client.secondaryPhoneNum }}" (click)="$event.stopPropagation();"><mat-icon>phone</mat-icon></a>
+        </ng-container>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="email">
+      <mat-header-cell *matHeaderCellDef class="header-cell">Email</mat-header-cell>
+      <mat-cell *matCellDef="let client" class="row-cell">
+        <ng-container *ngIf="client.email && device.isDesktop">
+          <a href="mailto:{{ client.email }}" (click)="$event.stopPropagation();">{{ client.email }}</a>
+        </ng-container>
+        <ng-container *ngIf="client.email &&  (device.isTablet || device.isMobile)">
+          <a href="mailto:{{ client.email }}" (click)="$event.stopPropagation();"><mat-icon>email</mat-icon></a>
+        </ng-container>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="serviceAddr">
+      <mat-header-cell *matHeaderCellDef class="header-cell">Service Addr</mat-header-cell>
+      <mat-cell *matCellDef="let client" class="row-cell">
+        <ng-container *ngIf="device.isDesktop">
+          <a target="_blank" href="https://www.google.com/maps/search/?api=1&query={{ addresses.get(client.id).sa | encodeUri }}">
+            {{ addresses.get(client.id)['sa'] }}
+          </a>
+        </ng-container>
+        <ng-container *ngIf="(device.isTablet || device.isMobile)">
+        </ng-container>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="billingAddr">
+      <mat-header-cell *matHeaderCellDef class="header-cell">Billing Addr</mat-header-cell>
+      <mat-cell *matCellDef="let client" class="row-cell">
+        <ng-container *ngIf="device.isDesktop">
+          <a target="_blank" href="https://www.google.com/maps/search/?api=1&query={{ addresses.get(client.id).ba | encodeUri }}">
+            {{ addresses.get(client.id)['ba'] }}
+          </a>
+        </ng-container>
+        <ng-container *ngIf="(device.isTablet || device.isMobile)">
+        </ng-container>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="processor">
+      <mat-header-cell *matHeaderCellDef class="header-cell">Processor</mat-header-cell>
+      <mat-cell *matCellDef="let client" class="row-cell">{{ client.processor }}</mat-cell>
+    </ng-container>
+
+    <mat-header-row class="top-radius header" *matHeaderRowDef="displayedFields"></mat-header-row>
+    <mat-row class="selectable row" [ngClass]="{ 'selected': selected.includes(i), 'selectable': !selected.includes(i) }" (click)="onRowClick(i)" *matRowDef="let client; columns: displayedFields; let i=index"></mat-row>
+    <mat-footer-row class="bottom-radius footer" *matFooterRowDef="columnsToDisplay"></mat-footer-row>
+  </mat-table>
 </div>
 <div *ngIf="!clients">No clients found!</div>

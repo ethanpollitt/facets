@@ -10,12 +10,14 @@ import { SharedModule } from '../shared/shared.module';
 import { CreateUpdateClientComponent } from './create-update/create-update.component';
 import { DeleteClientComponent } from './delete/delete.component';
 import { MaterialModule } from '../material.module';
+import { ClientDetailComponent } from './detail/detail.component';
 
 @NgModule({
   declarations: [
     ClientComponent,
     CreateUpdateClientComponent,
-    DeleteClientComponent
+    DeleteClientComponent,
+    ClientDetailComponent
   ],
   imports: [
     CommonModule,
