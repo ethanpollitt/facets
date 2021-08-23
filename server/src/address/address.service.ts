@@ -33,7 +33,7 @@ export class AddressService {
       const newAddress = new this.addressModel(addressDto);
       return await newAddress.save();
     } catch (e) {
-      console.log(`CAUGHT EXCEPTION: ${e.message}`);
+      console.error(`CAUGHT EXCEPTION: `, e);
       if (e instanceof Error.ValidationError)
         throw new BadRequestException();
       throw e;

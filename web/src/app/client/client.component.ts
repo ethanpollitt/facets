@@ -38,6 +38,7 @@ export class ClientComponent implements OnInit {
   ) {
     this.appService.deviceUpdates.subscribe(_ => {
       this.device = _;
+      this.setDisplayedFields();
     });
   }
 
@@ -51,7 +52,6 @@ export class ClientComponent implements OnInit {
       this.dataSource = new MatTableDataSource<Client>(this.clients);
 
       this.buildAddresses();
-      this.setDisplayedFields();
       s.unsubscribe();
     });
   }

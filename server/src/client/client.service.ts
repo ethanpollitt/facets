@@ -33,7 +33,7 @@ export class ClientService {
       const newClient = new this.clientModel(clientDto);
       return await newClient.save();    
     } catch (e) {
-      console.log(`CAUGHT EXCEPTION: ${e.message}`);
+      console.error(`CAUGHT EXCEPTION: `, e);
       if (e instanceof Error.ValidationError)
         throw new BadRequestException();
       throw e;
