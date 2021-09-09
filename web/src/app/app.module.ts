@@ -7,8 +7,10 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { AppService } from './app.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { ClientModule } from './client/client.module';
 import { NavModule } from './nav/nav.module';
+import { ClientModule } from './client/client.module';
+import { AppointmentModule } from './appointment/appointment.module';
+import { TechnicianModule } from './technician/technician.module';
 
 @NgModule({
   declarations: [
@@ -22,6 +24,8 @@ import { NavModule } from './nav/nav.module';
     FlexLayoutModule,
 
     ClientModule,
+    TechnicianModule,
+    AppointmentModule,
     NavModule
   ],
   providers: [AppService],

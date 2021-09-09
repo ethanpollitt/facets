@@ -4,7 +4,7 @@ import { AppointmentService } from './appointment.service';
 import { AppointmentDto } from './appointment.model';
 import { Appointment } from './appointment.schema';
 
-@Controller('appointment')
+@Controller('appointments')
 export class AppointmentController {
   constructor(private readonly appointmentService: AppointmentService) {}
 

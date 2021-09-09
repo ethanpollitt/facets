@@ -1,0 +1,49 @@
+@import '~@angular/material/theming';
+
+.table {
+  background-color: mat-color($mat-light-theme-background, card);
+  
+  .header {
+    background: darken(mat-color($mat-light-theme-background, card), 3%);
+  }
+
+  .header-cell {
+    font-weight: 600;
+    font-size: 1em;
+  }
+
+  .selectable {
+    transition: all .5s;
+  }
+  
+  .selectable:nth-child(odd) {
+    background: darken(mat-color($mat-light-theme-background, card), 3%);
+  }
+  
+  .selectable:hover {
+    @include mat-elevation(2);
+    background: darken(mat-color($mat-light-theme-background, card), 10%);
+  }
+  
+  .selected {
+    background: darken(mat-color($mat-light-theme-background, card), 15%);
+  }
+
+  .footer {
+    background: darken(mat-color($mat-light-theme-background, card), 3%);
+  }
+}
+
+.bottom-radius {
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+.top-radius {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
+.all-radius {
+  border-radius: 4px;
+}

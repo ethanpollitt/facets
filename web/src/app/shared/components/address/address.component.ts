@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Address } from 'src/app/client/client.model';
+import { Address } from './address.model';
 
 @Component({
   selector: 'app-address',

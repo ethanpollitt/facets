@@ -4,7 +4,7 @@ import { TechnicianDto } from './technician.model';
 import { Technician } from './technician.schema';
 import { TechnicianService } from './technician.service';
 
-@Controller('technician')
+@Controller('technicians')
 export class TechnicianController {
   constructor(private readonly technicianService: TechnicianService) {}
 

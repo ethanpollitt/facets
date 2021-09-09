@@ -1,0 +1,33 @@
+<div *ngIf="hasAppointments" class="appointment-container">
+  <mat-table class="all-radius table" [dataSource]="dataSource">
+    <ng-container matColumnDef="client">
+      <mat-header-cell *matHeaderCellDef class="header-cell">Client</mat-header-cell>
+      <mat-cell *matCellDef="let appointment" class="row-cell">{{ appointment.client.firstName }} {{ appointment.client.lastName }} ({{ appointment.client.type === 'RES' ? 'Residentail' : 'Commercial' }})</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="technician">
+      <mat-header-cell *matHeaderCellDef class="header-cell">Technician</mat-header-cell>
+      <mat-cell *matCellDef="let appointment" class="row-cell">{{ appointment.technician.firstName }} {{ appointment.technician.lastName }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="date">
+      <mat-header-cell *matHeaderCellDef class="header-cell">Date</mat-header-cell>
+      <mat-cell *matCellDef="let appointment" class="row-cell">{{ appointment.date | date }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="windowLength">
+      <mat-header-cell *matHeaderCellDef class="header-cell">Appt. Length</mat-header-cell>
+      <mat-cell *matCellDef="let appointment" class="row-cell">{{ appointment.windowLength | minutes }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="customerNotes">
+      <mat-header-cell *matHeaderCellDef class="header-cell">Customer Notes</mat-header-cell>
+      <mat-cell *matCellDef="let appointment" class="row-cell">{{ appointment.customerNotes }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <mat-header-cell *matHeaderCellDef class="header-cell">Appt. Status</mat-header-cell>
+      <mat-cell *matCellDef="let appointment" class="row-cell">{{ statuses.get(appointment.id).display }}</mat-cell>
+    </ng-container>
+
+    <mat-header-row class="top-radius header" *matHeaderRowDef="displayedFields"></mat-header-row>
+    <mat-row class="selectable row" [ngClass]="{ 'selected': selected.includes(i), 'selectable': !selected.includes(i) }" (click)="onRowClick(i)" *matRowDef="let appointment; columns: displayedFields; let i=index"></mat-row>
+    <mat-footer-row class="bottom-radius footer" *matFooterRowDef="columnsToDisplay"></mat-footer-row>
+  </mat-table>
+</div>
+<div *ngIf="!hasAppointments">No appointments found!</div>

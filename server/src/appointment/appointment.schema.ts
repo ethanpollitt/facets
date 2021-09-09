@@ -15,6 +15,8 @@ export class Appointment extends Document {
   technician: Types.ObjectId;
   @Prop({ required: true })
   date: Date;
+  @Prop({ default: 60 })
+  windowLength: number; // minutes
   @Prop()
   customerNotes: string;
   @Prop()

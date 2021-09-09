@@ -1,29 +1,30 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { Client } from './client.model';
+
 import { HttpService } from '../shared/http.service';
-import { HttpClient } from '@angular/common/http';
+import { Appointment } from './appointment.model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ClientService extends HttpService {
+export class AppointmentService extends HttpService {
   constructor(protected http: HttpClient) {
-    super(http, 'clients');
+    super(http, 'appointments');
   }
 
-  getClients = (): Observable<Client[]> => {
+  getAppointments = (): Observable<Appointment[]> => {
     const url = this.baseUrl;
-    return this.http.get<Client[]>(url, { observe: "response" }).pipe(
+    return this.http.get<Appointment[]>(url, { observe: "response" }).pipe(
       map(_ => {
         if (_.status >= 200 && _.status < 300) {
           try {
-            const clients: Client[] = [];
+            const appointments: Appointment[] = [];
             _.body.forEach(_ => {
-              clients.push(new Client(_));
+              appointments.push(new Appointment(_));
             });
-            return clients;
+            return appointments;
           } catch(e) {
             console.error(e);
           }
@@ -35,35 +36,35 @@ export class ClientService extends HttpService {
     );
   }
 
-  createClient = (client: Client): Observable<Client> => {
+  createAppointment = (appointment: Appointment): Observable<Appointment> => {
     const url = this.baseUrl;
-    return this.http.post(url, client, { observe: "response" }).pipe(
+    return this.http.post(url, appointment, { observe: "response" }).pipe(
       map(_ => {
         if (_.status >= 200 && _.status < 300)
-          return new Client(_.body as any);
+          return new Appointment(_.body as any);
         return null;
       }),
       catchError(this.handleError)
     );
   }
 
-  updateClient = (client: Client): Observable<Client> => {
+  updateAppointment = (appointment: Appointment): Observable<Appointment> => {
     let url = this.baseUrl;
-    if ('id' in client && !!client.id)
-      url += `/${client.id}`;
+    if ('id' in appointment && !!appointment.id)
+      url += `/${appointment.id}`;
     else
-      return throwError('ID required to update a Client!');
-    return this.http.put(url, client, { observe: "response" }).pipe(
+      return throwError('ID required to update a Appointment!');
+    return this.http.put(url, appointment, { observe: "response" }).pipe(
       map(_ => {
         if (_.status >= 200 && _.status < 300)
-          return new Client(_.body as any);
+          return new Appointment(_.body as any);
         return null;
       }),
       catchError(this.handleError)
     );
   }
 
-  deleteClient = (id: number): Observable<boolean> => {
+  deleteAppointment = (id: number): Observable<boolean> => {
     const url = `${this.baseUrl}/${id}`;
     return this.http.delete(url, { observe: "response" }).pipe(
       map(_ => {

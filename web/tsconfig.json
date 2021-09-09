@@ -18,6 +18,6 @@
     "experimentalDecorators": true,
   },
   "angularCompilerOptions": {
-    "enableIvy": false
+    "strictTemplates": true
   }
 }

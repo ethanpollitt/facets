@@ -1,5 +1,6 @@
 import { RequiredExceptFor } from 'src/types';
 import { MongooseSchemaModel } from '../shared/mongoose.model';
+import { Address } from '../shared/components/address/address.model';
 
 export type ClientType = 'RES' | 'COM';
 
@@ -37,29 +38,5 @@ export class Client extends MongooseSchemaModel {
 
   isEqual(other: Client): boolean {
     return Object.keys(this).every(_ => this[_] === other[_]);
-  } 
-}
-
-export class Address extends MongooseSchemaModel {
-  streetAddr: string;
-  city: string;
-  state: string;
-  zip: string;
-
-  public constructor(init: RequiredExceptFor<Address, 'zip'>) {
-    super(init);
-    if (init)
-      Object.assign(this, init);
-  }
-
-  isEqual(other: Address): boolean {
-    return Object.keys(this).every(_ => this[_] === other[_]);
-  }
-
-  toString(): string {
-    let address = this.streetAddr + ', ' + this.city + ', ' + this.state;
-    if (this.zip)
-      address += ' ' + this.zip;
-    return address;
   }
 }

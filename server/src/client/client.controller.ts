@@ -4,7 +4,7 @@ import { ClientService } from './client.service';
 import { Client } from './client.schema';
 import { ClientDto } from './client.model';
 
-@Controller('client')
+@Controller('clients')
 export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
