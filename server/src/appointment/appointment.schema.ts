@@ -9,7 +9,7 @@ export class Appointment extends Document {
   createdOn: Date;
   @Prop({ default: false })
   cancelled: boolean;
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'Client' })
+  @Prop({ type: SchemaTypes.ObjectId, ref: 'Client', required: true })
   client: Types.ObjectId;
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Technician' })
   technician: Types.ObjectId;

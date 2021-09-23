@@ -10,6 +10,8 @@
   
   .header {
     background: darken(mat-color($mat-light-theme-background, card), 3%);
+    border-bottom: 2px darken(mat-color($mat-light-theme-background, card), 20%) solid;
+    border-top: none;
   }
 
   .header-cell {
@@ -36,6 +38,8 @@
 
   .footer {
     background: darken(mat-color($mat-light-theme-background, card), 3%);
+    border-top: 1px darken(mat-color($mat-light-theme-background, card), 20%) solid;
+    border-bottom: none;
   }
 }
 

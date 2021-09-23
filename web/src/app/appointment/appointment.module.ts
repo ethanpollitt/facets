@@ -8,10 +8,12 @@ import { SharedModule } from '../shared/shared.module';
 import { MaterialModule } from '../material.module';
 import { AppointmentComponent } from './appointment.component';
 import { AppointmentService } from './appointment.service';
+import { CreateUpdateAppointmentComponent } from './create-update/create-update.component';
 
 @NgModule({
   declarations: [
-    AppointmentComponent
+    AppointmentComponent,
+    CreateUpdateAppointmentComponent
   ],
   imports: [
     CommonModule,

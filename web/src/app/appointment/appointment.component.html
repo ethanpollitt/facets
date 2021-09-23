@@ -1,5 +1,5 @@
 <div *ngIf="hasAppointments" class="appointment-container">
-  <mat-table class="all-radius table" [dataSource]="dataSource">
+  <mat-table class="all-radius table mat-elevation-z2" [dataSource]="dataSource">
     <ng-container matColumnDef="client">
       <mat-header-cell *matHeaderCellDef class="header-cell">Client</mat-header-cell>
       <mat-cell *matCellDef="let appointment" class="row-cell">{{ appointment.client.firstName }} {{ appointment.client.lastName }} ({{ appointment.client.type === 'RES' ? 'Residentail' : 'Commercial' }})</mat-cell>

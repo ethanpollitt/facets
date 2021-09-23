@@ -1,0 +1,60 @@
+<h1 mat-dialog-title>Create Client</h1>
+<div mat-dialog-content>
+  <form [formGroup]="form">
+    <div>
+      <mat-form-field appearance="outline" class="input">
+        <mat-label>Client</mat-label>
+        <mat-select  [formControl]="form.controls.client">
+          <mat-option disabled [value]="null">Select One</mat-option>
+          <mat-option *ngFor="let client of clients" [value]="client.id">{{ client.firstName }} {{ client.lastName }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.controls.client.invalid && form.controls.client.touched">Must select a client</mat-error>
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field appearance="outline" class="input">
+        <mat-label>Technician</mat-label>
+        <mat-select  [formControl]="form.controls.technician">
+          <mat-option disabled [value]="null">Select One</mat-option>
+          <mat-option *ngFor="let technician of technicians" [value]="technician.id">{{ technician.firstName }} {{ technician.lastName }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.controls.technician.invalid && form.controls.technician.touched">Must select a technician</mat-error>
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field appearance="outline" class="input">
+        <mat-label>Date</mat-label>
+        <input matInput [formControl]="form.controls.date" required type="datetime-local" placeholder="Appointment date">
+        <mat-error *ngIf="form.controls.date.invalid && form.controls.date.touched">Invalid date</mat-error>
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field appearance="outline" class="input" (click)="$event.stopPropagation()">
+        <mat-label>Window Length</mat-label>
+        <mat-select style="width: 45%;" [formControl]="form.controls.windowHours">
+          <mat-option disabled [value]="null">Select One</mat-option>
+          <mat-option *ngFor="let hour of hours" [value]="hour">{{ hour }}</mat-option>
+        </mat-select>
+        <mat-select style="width: 45%;" [formControl]="form.controls.windowMinutes">
+          <mat-option disabled [value]="null">Select One</mat-option>
+          <mat-option *ngFor="let minute of minutes" [value]="hour">{{ minute }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.controls.windowMinutes.invalid && form.controls.windowMinutes.touched">Must select a value for minutes or hours</mat-error>
+      </mat-form-field>
+    </div>
+    <div>
+      <mat-form-field appearance="outline" class="input">
+        <mat-label>Customer Notes</mat-label>
+        <textarea matInput [formControl]="form.controls.customerNotes"></textarea>
+        <!-- <mat-error *ngIf="form.controls.secondaryPhoneNum.invalid && form.controls.secondaryPhoneNum.touched">Invalid notes</mat-error> -->
+      </mat-form-field>
+    </div>
+  </form>
+</div>
+<div mat-dialog-actions>
+  <div fxFlexFill fxLayout="row" fxFlexAlign="end center">
+    <button fxFlex="none" mat-stroked-button color="accent" (click)="close()">Cancel</button>
+    <div fxFlex></div>
+    <button fxFlex="none" mat-stroked-button color="primary" [disabled]="form.invalid" (click)="submit()">Submit</button>
+  </div>
+</div>

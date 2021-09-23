@@ -8,6 +8,7 @@ import { ToolbarService } from '../nav/toolbar/toolbar.service';
 import { Device } from '../shared/models/device';
 import { Appointment, AppointmentStatus } from './appointment.model';
 import { AppointmentService } from './appointment.service';
+import { CreateUpdateAppointmentComponent } from './create-update/create-update.component';
 
 @Component({
   selector: 'app-appointment',
@@ -67,8 +68,8 @@ export class AppointmentComponent implements OnInit {
 
   private setBtns = (btnIds: { add?: boolean, update?: boolean, delete?: boolean, detail?: boolean }): void => {
     const newBtns: IconButtonOptions[] = [];
-    // if (btnIds.add)
-    //   newBtns.push(new IconButtonOptions(() => this.showCreateUpdateDiag(), 'accent', 'add_circle_outline', 'Add new Client'));
+    if (btnIds.add)
+      newBtns.push(new IconButtonOptions(() => this.showCreateUpdateDiag(), 'accent', 'add_circle_outline', 'Create Appointment'));
     // if (btnIds.detail)
     //   newBtns.push(new IconButtonOptions(() => this.showDetailDiag(this.clients[this.selected[0]]), 'accent', 'description', `Show details on selected Client`));
     // if (btnIds.update)
@@ -82,6 +83,60 @@ export class AppointmentComponent implements OnInit {
     };
     this.toolbarService.setOptions(options);
   }
+
+  private showCreateUpdateDiag = (appt?: Appointment): void => {
+    const dialogRef = this.dialog.open(CreateUpdateAppointmentComponent, {
+      data: appt ? { client: appt } : null,
+      autoFocus: true,
+      disableClose: true,
+      hasBackdrop: true,
+      minWidth: 320
+    });
+
+    dialogRef.afterClosed().subscribe(_ => {
+      console.log(`The dialog was closed (${appt ? 'update' : 'add'})`);
+      if (_) {
+        if (appt)
+          this.appointments = this.appointments.filter(_ => _.id !== appt.id);
+        this.appointments.push(_);
+        this.appointments.sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+        this.afterAppointmentsChange();
+        this.setStatuses();
+      }
+    });
+  }
+
+  // private showDeleteDiag = (client: Client): void => {
+  //   const dialogRef = this.dialog.open(DeleteClientComponent, {
+  //     data: { client: client },
+  //     autoFocus: true,
+  //     disableClose: true,
+  //     hasBackdrop: true,
+  //     minWidth: 320
+  //   });
+
+  //   dialogRef.afterClosed().subscribe(_ => {
+  //     console.log(`The delete dialog was closed`);
+  //     if (_) {
+  //       this.clients = this.clients.filter(_ => _.id !== client.id);
+  //       this.afterClientsChange();
+  //     }
+  //   });
+  // }
+
+  // private showDetailDiag = (client: Client): void => {
+  //   const dialogRef = this.dialog.open(ClientDetailComponent, {
+  //     data: { client: client },
+  //     autoFocus: true,
+  //     disableClose: true,
+  //     hasBackdrop: true,
+  //     minWidth: 320
+  //   });
+
+  //   dialogRef.afterClosed().subscribe(_ => {
+  //     console.log(`The detail dialog was closed`);
+  //   });
+  // }
 
   private setStatuses = () => {
     this.statuses = new Map<number, { status: AppointmentStatus, date: Date, display: string }>();
@@ -102,6 +157,12 @@ export class AppointmentComponent implements OnInit {
         status = AppointmentStatus.PENDING;
       this.statuses.set(_.id, { status: status, date: date, display: date ? `${status} (${date})` : status });
     });
+  }
+
+  private afterAppointmentsChange = (): void => {
+    this.hasAppointments = this.appointments.length > 0;
+    this.dataSource.data = this.appointments;
+    this.dataSource._updateChangeSubscription();
   }
 
   private setDisplayedFields = (): void => {
