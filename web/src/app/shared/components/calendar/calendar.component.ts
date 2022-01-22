@@ -98,7 +98,7 @@ export class CalendarComponent implements OnInit {
     this.lastDay = 32 - new Date(date.getFullYear(), date.getMonth(), 32).getDate();
     this.endOfMonth = new Date(date.getFullYear(), date.getMonth(), this.lastDay + 1);
     this.beginFiller = [...Array(this.firstDay == 1 ? 1 : this.firstDay).keys()];
-    this.endFiller = [...Array(34 - this.lastDay).keys()];
+    this.endFiller = [...Array(42 - this.lastDay - this.firstDay).keys()];
     this.days = [...Array(this.lastDay).keys()];
   }
 }

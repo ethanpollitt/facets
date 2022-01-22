@@ -4,8 +4,8 @@ import { Client } from '../client/client.model';
 import { Technician } from '../technician/technician.model';
 
 export class Appointment extends MongooseSchemaModel {
-  client: Client;
-  technician: Technician;
+  client: Client | string;
+  technician: Technician | string;
   date: Date;
   windowLength: number;  // minutes
   customerNotes?: string;
@@ -19,15 +19,15 @@ export class Appointment extends MongooseSchemaModel {
   public constructor(init: RequiredExceptFor<Appointment, 'customerNotes' | 'techNotes' | 'postNotes' | 'cancelled' | 'routed' | 'started' | 'completed'>) {
     super(init);
     if (init) {
-      // if (typeof init.client === 'string')
-      //   this.client = init.client;
-      // else
-      this.client = new Client(init.client);
+      if (typeof init.client === 'string')
+        this.client = init.client;
+      else
+        this.client = new Client(init.client);
        
-      // if (typeof init.technician === 'string')
-      //   this.technician = init.technician;
-      // else
-      this.technician = new Technician(init.technician);
+      if (typeof init.technician === 'string')
+        this.technician = init.technician;
+      else
+        this.technician = new Technician(init.technician);
         
       this.date = new Date(init.date);
       this.windowLength = init.windowLength;
