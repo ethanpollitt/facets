@@ -37,7 +37,11 @@ export class AppointmentService {
 
     try {
       const newAppt = new this.appointmentModel(appointmentDto);
-      return await newAppt.save();
+      return await (newAppt.save().then(_ => 
+        _.populate('client')
+          .populate('technician')
+          .execPopulate()
+      ));
     } catch (e) {
       console.error(`CAUGHT EXCEPTION: `, e);
       if (e instanceof Error.ValidationError)
@@ -47,8 +51,12 @@ export class AppointmentService {
   }
 
   update = async (id: number, appointmentDto: AppointmentDto): Promise<Appointment> => {
-    const newAppointment = new this.appointmentModel(appointmentDto);
-    return this.appointmentModel.findOneAndUpdate({ id: id }, newAppointment, { new: true }).exec();
+    const updateObj: any = { ...appointmentDto };
+    return this.appointmentModel.findOneAndUpdate({ id: id }, updateObj, { new: true }).exec().then(_ => 
+      _.populate('client')
+        .populate('technician')
+        .execPopulate()
+    );
   }
 
   delete = async (id: number): Promise<void> => {

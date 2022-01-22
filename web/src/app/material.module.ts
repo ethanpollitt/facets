@@ -22,6 +22,9 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { CdkColumnDef } from '@angular/cdk/table';
 
 const modules = [
   MatCardModule,
@@ -36,6 +39,7 @@ const modules = [
   MatDividerModule,
   MatCheckboxModule,
   MatTableModule,
+  MatTabsModule,
   MatSortModule,
   MatPaginatorModule,
   MatProgressSpinnerModule,
@@ -46,10 +50,12 @@ const modules = [
   MatDatepickerModule,
   MatButtonToggleModule,
   MatChipsModule,
+  MatGridListModule,
 ];
 
 @NgModule({
   imports: modules,
-  exports: modules
+  exports: modules,
+  providers: [CdkColumnDef]
 })
 export class MaterialModule { }

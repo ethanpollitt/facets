@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
@@ -9,11 +9,14 @@ import { MaterialModule } from '../material.module';
 import { AppointmentComponent } from './appointment.component';
 import { AppointmentService } from './appointment.service';
 import { CreateUpdateAppointmentComponent } from './create-update/create-update.component';
+import { AppointmentDetailComponent } from './detail/detail.component';
+import { MinutesPipe } from '../shared/pipes/minutes.pipe';
 
 @NgModule({
   declarations: [
     AppointmentComponent,
-    CreateUpdateAppointmentComponent
+    CreateUpdateAppointmentComponent,
+    AppointmentDetailComponent
   ],
   imports: [
     CommonModule,
@@ -25,7 +28,9 @@ import { CreateUpdateAppointmentComponent } from './create-update/create-update.
   ],
   providers: [
     AppointmentService,
-    EncodeUriPipe
+    EncodeUriPipe,
+    DatePipe,
+    MinutesPipe
   ]
 })
 export class AppointmentModule { }

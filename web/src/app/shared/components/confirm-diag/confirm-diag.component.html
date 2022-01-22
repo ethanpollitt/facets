@@ -1,0 +1,12 @@
+<h2 fxLayout="row" fxLayoutAlign="start center">
+    <mat-icon fxFlex="0 0 0" *ngIf="!!data.icon" class="md-icon" [color]="data.icon.color">{{ data.icon.lignature }}</mat-icon> 
+    <div fxFlex>{{ data.title }}</div>
+</h2>
+<mat-dialog-content>{{ data.message }}</mat-dialog-content>
+<mat-dialog-actions>
+  <div fxFlexFill fxLayout="row" fxFlexAlign="end center">
+    <button mat-stroked-button fxFlex="none" color="accent" [mat-dialog-close]="false">Cancel</button>
+    <div fxFlex></div>
+    <button mat-stroked-button fxFlex="none" color="primary" [mat-dialog-close]="true">{{ data.confirmBtnText ? data.confirmBtnText : 'Confirm' }}</button>
+  </div>  
+</mat-dialog-actions>

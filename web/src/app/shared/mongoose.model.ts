@@ -1,4 +1,5 @@
 export class MongooseSchemaModel {
+  _id: string;
   id: number;
   createdOn: Date;
   

@@ -36,7 +36,11 @@ export class Client extends MongooseSchemaModel {
     }
   }
 
-  isEqual(other: Client): boolean {
+  public isEqual = (other: Client): boolean => {
     return Object.keys(this).every(_ => this[_] === other[_]);
+  }
+
+  public toString = (): string => {
+    return `${this.firstName} ${this.lastName} (${this.type})`;
   }
 }

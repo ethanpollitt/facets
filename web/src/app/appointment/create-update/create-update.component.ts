@@ -6,8 +6,9 @@ import { Appointment } from '../appointment.model';
 import { AppointmentService } from '../appointment.service';
 import { Client } from 'src/app/client/client.model';
 import { Technician } from 'src/app/technician/technician.model';
-import { range } from 'rxjs';
-import { min } from 'rxjs/operators';
+import { ClientService } from 'src/app/client/client.service';
+import { TechnicianService } from 'src/app/technician/technician.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-appointment-create-update',
@@ -15,26 +16,30 @@ import { min } from 'rxjs/operators';
   styleUrls: ['./create-update.component.scss']
 })
 export class CreateUpdateAppointmentComponent implements OnInit {
-  private _clients: Client[];
-  private _technicians: Technician[];
+  public clients: Client[] = [];
+  public technicians: Technician[] = [];
 
   readonly hours: number[];
   readonly minutes: number[];
+
+  private dateFmt: DatePipe = new DatePipe('en-US');
 
   currentAppointment: Appointment;
   form: FormGroup = new FormGroup({
     client: new FormControl(null, [Validators.required]),
     technician: new FormControl(null),
     date: new FormControl(null, [Validators.required]),
-    windowMinutes: new FormControl(null, [Validators.required, Validators.max(59)]),
     windowHours: new FormControl(null, [Validators.required, Validators.max(23)]),
+    // windowMinutes: new FormControl(null, [Validators.required, Validators.max(59)]),
     customerNotes: new FormControl(null),
   });
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: { client: Appointment },
+    @Inject(MAT_DIALOG_DATA) public data: { appointment: Appointment },
     public dialogRef: MatDialogRef<CreateUpdateAppointmentComponent>,
     private appointmentService: AppointmentService,
+    private clientService: ClientService,
+    private techService: TechnicianService,
     private snackBar: MatSnackBar
   ) {
     // Populate hours in increments of 1
@@ -51,18 +56,39 @@ export class CreateUpdateAppointmentComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (this.data && this.data.client) {
-      this.currentAppointment = this.data.client;
-      Object.keys(this.form.controls).forEach(_ => this.form.controls[_].setValue(this.currentAppointment[_]));
+    if (this.data && this.data.appointment) {
+      this.currentAppointment = this.data.appointment;
+      Object.keys(this.form.controls).forEach((_: string) => {
+        switch (_) {
+          case "windowHours":
+            this.form.controls[_].setValue(Math.floor(+this.currentAppointment.windowLength / 60));
+            break;
+          case "technician":
+          case "client":
+            this.form.controls[_].setValue(this.currentAppointment[_]['_id']);
+            break;
+          case "date":
+            this.form.controls[_].setValue(this.dateFmt.transform(this.currentAppointment[_], 'yyyy-MM-ddTHH:mm:ss'));
+            break;
+          default:
+            this.form.controls[_]?.setValue(this.currentAppointment[_]);
+        }
+      });
     }
-  }
 
-  get clients() {
-    return this._clients;
-  }
+    this.clientService.getClients().subscribe(_ => {
+      this.clients = _;
+    }, _ => {
+      // TODO: finish error modal + service & open here
+      console.error(_);
+    });
 
-  get technicians() {
-    return this._technicians;
+    this.techService.getTechnicians().subscribe(_ => {
+      this.technicians = _;
+    }, _ => {
+      // TODO: finish error modal + service & open here
+      console.error(_);
+    })
   }
 
   submit = (): void => {
@@ -76,8 +102,15 @@ export class CreateUpdateAppointmentComponent implements OnInit {
     this.dialogRef.close(false);
   }
 
-  private create = (): void => {    
-    const appt: Appointment = new Appointment(this.form.getRawValue());
+  stopEvent = ($event: Event): void => {
+    $event.preventDefault();
+    $event.stopPropagation();
+  }
+
+  private create = (): void => {
+    const formObj = this.form.getRawValue();
+    formObj['windowLength'] = +formObj['windowHours'] * 60;  // TODO: Add back minutes here when re-implementing
+    const appt: Appointment = new Appointment(formObj);
 
     this.appointmentService.createAppointment(appt).subscribe(_ => {
       if (_) {
@@ -91,7 +124,9 @@ export class CreateUpdateAppointmentComponent implements OnInit {
   }
 
   private update = (): void => {
-    const appt: Appointment = new Appointment(this.form.getRawValue());
+    const formObj = this.form.getRawValue();
+    formObj['windowLength'] = +formObj['windowHours'] * 60;  // TODO: Add back minutes here when re-implementing
+    const appt: Appointment = new Appointment(formObj);
 
     // Compare the clients, return if equal
     if (appt.isEqual(this.currentAppointment))
@@ -102,7 +137,7 @@ export class CreateUpdateAppointmentComponent implements OnInit {
     this.appointmentService.updateAppointment(appt).subscribe(_ => {
       if (_) {
         this.snackBar.open(`Appointment ${this.currentAppointment.id} updated!`, null, { duration: 5000, horizontalPosition: 'end' });
-        this.dialogRef.close(_);
+        this.dialogRef.close(new Appointment(_));
       } else
         this.snackBar.open(`Updating Appointment ${this.currentAppointment.id} failed!`, null, { duration: 10000, horizontalPosition: 'end' });
     }, _ => {

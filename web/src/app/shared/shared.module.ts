@@ -9,12 +9,20 @@ import { EncodeUriPipe } from './pipes/encode-uri.pipe';
 import { AddressComponent } from './components/address/address.component';
 import { MaterialModule } from '../material.module';
 import { MinutesPipe } from './pipes/minutes.pipe';
+import { EllipsisPipe } from './pipes/ellipsis.pipe';
+import { ConfirmDiagComponent } from './components/confirm-diag/confirm-diag.component';
+import { ErrorDiagComponent } from './components/error-diag/error-diag.component';
+import { CalendarComponent } from './components/calendar/calendar.component';
 
 @NgModule({
   declarations: [
-    EncodeUriPipe,
     AddressComponent,
-    MinutesPipe
+    ConfirmDiagComponent,
+    ErrorDiagComponent,
+    CalendarComponent,
+    EncodeUriPipe,
+    MinutesPipe,
+    EllipsisPipe
   ],
   imports: [
     CommonModule,
@@ -25,9 +33,13 @@ import { MinutesPipe } from './pipes/minutes.pipe';
     MaterialModule
   ],
   exports: [
+    AddressComponent,
+    ConfirmDiagComponent,
+    ErrorDiagComponent,
+    CalendarComponent,
     EncodeUriPipe,
     MinutesPipe,
-    AddressComponent
+    EllipsisPipe
   ]
 })
 export class SharedModule { }

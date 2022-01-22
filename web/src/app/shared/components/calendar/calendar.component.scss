@@ -1,0 +1,23 @@
+.calendar-container {
+  margin: 10px;
+}
+
+.mat-grid-list {
+  .mat-grid-tile {
+    border: 1px solid black;
+      .cell-appointments-list {
+        .cell-appointment {
+          margin: 0 1px;
+          padding: 0 10px;
+          transition: .15s ease-in-out;
+          -moz-transition: .15s ease-in-out;
+          -webkit-transition: .15s ease-in-out;
+        }
+        .cell-appointment:hover {
+          background-color: rgba(211, 47, 47, .15);
+          border-radius: 3px;
+          cursor: pointer;
+        }
+      }
+  }
+}

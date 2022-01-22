@@ -1,0 +1,49 @@
+<h1 mat-dialog-title>Appointment Details</h1>
+<div mat-dialog-content>
+  <div class="detail-row" fxLayout="row" fxFlexAlign="start center">
+    <div class="row-label" fxFlex="40%">Appt. Status: </div>
+    <div fxFlex="60%">{{ appt.getDisplayStatus() }}</div>
+  </div>
+  <div class="detail-row" fxLayout="row" fxFlexAlign="start center">
+    <div class="row-label" fxFlex="40%">Client Name: </div>
+    <div fxFlex="60%">
+      <a href="javascript:;" (click)="openClientDetails(appt.client)">{{ appt.client.firstName }} {{ appt.client.lastName }}</a>
+    </div>
+  </div>
+  <div class="detail-row" fxLayout="row" fxFlexAlign="start center">
+    <div class="row-label" fxFlex="40%">Technician Name: </div>
+    <div fxFlex="60%">{{ appt.technician.firstName }} {{ appt.technician.lastName }}</div>
+  </div>
+  <div class="detail-row" fxLayout="row" fxFlexAlign="start center">
+    <div class="row-label" fxFlex="40%">Appt. Date: </div>
+    <div fxFlex="60%">{{ appt.date | date:'MM/dd/yyyy h:mmaaaaa\'m\'' }}</div>
+  </div>
+  <div class="detail-row" fxLayout="row" fxFlexAlign="start center">
+    <div class="row-label" fxFlex="40%">Appt. Length: </div>
+    <div fxFlex="60%">{{ appt.windowLength | minutes }}</div>
+  </div>
+  <div class="detail-row" fxLayout="row" fxFlexAlign="start center">
+    <div class="row-label" fxFlex="40%">Customer Notes: </div>
+    <div fxFlex="60%">
+      {{ appt.customerNotes }}
+    </div>
+  </div>
+  <div class="detail-row" fxLayout="row" fxFlexAlign="start center">
+    <div class="row-label" fxFlex="40%">Technician Notes: </div>
+    <div fxFlex="60%">
+      {{ appt.techNotes }}
+    </div>
+  </div>
+  <div class="detail-row" fxLayout="row" fxFlexAlign="start center">
+    <div class="row-label" fxFlex="40%">Post Notes: </div>
+    <div fxFlex="60%">
+      {{ appt.postNotes }}
+    </div>
+  </div>
+</div>
+<div mat-dialog-actions>
+  <div fxFlexFill fxLayout="row" fxFlexAlign="end center">
+    <button fxFlex="none" mat-stroked-button color="accent" (click)="close()">Cancel</button>
+    <div fxFlex></div>
+  </div>
+</div>

@@ -72,7 +72,7 @@
 
     <mat-header-row class="top-radius header" *matHeaderRowDef="displayedFields"></mat-header-row>
     <mat-row class="selectable row" [ngClass]="{ 'selected': selected.includes(i), 'selectable': !selected.includes(i) }" (click)="onRowClick(i)" *matRowDef="let client; columns: displayedFields; let i=index"></mat-row>
-    <mat-footer-row class="bottom-radius footer" *matFooterRowDef="columnsToDisplay"></mat-footer-row>
+    <!-- <mat-footer-row class="bottom-radius footer" *matFooterRowDef="displayedFields"></mat-footer-row> -->
   </mat-table>
 </div>
 <div *ngIf="!hasClients">No clients found!</div>

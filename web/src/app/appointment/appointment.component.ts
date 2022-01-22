@@ -1,14 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { AppService } from '../app.service';
 import { IconButtonOptions, ToolbarOptions } from '../nav/toolbar/toolbar.model';
 import { ToolbarService } from '../nav/toolbar/toolbar.service';
-import { Device } from '../shared/models/device';
+import { ConfirmDiagComponent } from '../shared/components/confirm-diag/confirm-diag.component';
 import { Appointment, AppointmentStatus } from './appointment.model';
 import { AppointmentService } from './appointment.service';
 import { CreateUpdateAppointmentComponent } from './create-update/create-update.component';
+import { Device } from '../shared/models/device';
+import { IconOptions } from '../shared/models/icon';
+import { MatSort } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-appointment',
@@ -21,9 +25,13 @@ export class AppointmentComponent implements OnInit {
   device: Device;
   displayedFields: string[] = [];
   selected: number[] = [];
-  dataSource: MatTableDataSource<Appointment>;
   
-  private appointments: Appointment[];
+  dataSource: MatTableDataSource<Appointment> = new MatTableDataSource<Appointment>();
+  numRecords: number = 0;
+  
+  private sort: MatSort;
+  private paginator: MatPaginator;
+  private _appointments: Appointment[];
   private allFields: string[] = ["client", "date", "windowLength", "technician", "customerNotes", "status"];
   private tabletFields: string[] = ["client", "date", "technician", "status"];
   private mobileFields: string[] = ["client", "date", "technician"];
@@ -45,14 +53,49 @@ export class AppointmentComponent implements OnInit {
 
     const s = this.appointmentService.getAppointments().subscribe(_ => {
       // Set internal clients object & initialize data source
-      this.appointments = _;
-      this.hasAppointments = this.appointments.length > 0;
-      this.dataSource = new MatTableDataSource<Appointment>(this.appointments);
+      this._appointments = _;
+      this.hasAppointments = this._appointments.length > 0;
+      this.sortAppointments();
+      this.dataSource.data = this._appointments;
+      if (this.paginator)
+        this.dataSource.paginator = this.paginator;
+      if (this.sort)
+        this.dataSource.sort = this.sort;
+
+      this.dataSource.sortingDataAccessor = (item, property) => {
+        if (typeof item === 'object') {
+          switch (property) {
+            case 'client': return  item.client['id'];
+            case 'tech': return  item.technician['id'];
+            default: return item[property];
+          }
+        } else
+          return item[property];
+      }
 
       this.setStatuses();
 
       s.unsubscribe();
     });
+  }
+
+  ngAfterViewInit(): void {
+    if (!this.dataSource.paginator)
+      this.dataSource.paginator = this.paginator;
+  }
+
+  @ViewChild('paginatorEle') 
+  set matPaginator( paginator: MatPaginator){
+    this.paginator = paginator;
+  }
+
+  @ViewChild(MatSort) 
+  set matSort( sort: MatSort){
+    this.sort = sort;
+  }
+
+  get appointments() {
+    return this._appointments;
   }
 
   public onRowClick = (i: number): void => {
@@ -63,19 +106,24 @@ export class AppointmentComponent implements OnInit {
       this.selected = [i];
       // this.selected.push(i);
 
-    this.setBtns({ add: true, detail: this.selected.length > 0, delete: this.selected.length > 0, update: this.selected.length === 1 });
+    this.setBtns({ 
+      add: true, 
+      detail: this.selected.length > 0, 
+      cancel: this.selected.length > 0 && !this._appointments[i].cancelled,
+      update: this.selected.length === 1 
+    });
   }
 
-  private setBtns = (btnIds: { add?: boolean, update?: boolean, delete?: boolean, detail?: boolean }): void => {
+  private setBtns = (btnIds: { add?: boolean, update?: boolean, cancel?: boolean, detail?: boolean }): void => {
     const newBtns: IconButtonOptions[] = [];
     if (btnIds.add)
       newBtns.push(new IconButtonOptions(() => this.showCreateUpdateDiag(), 'accent', 'add_circle_outline', 'Create Appointment'));
     // if (btnIds.detail)
     //   newBtns.push(new IconButtonOptions(() => this.showDetailDiag(this.clients[this.selected[0]]), 'accent', 'description', `Show details on selected Client`));
-    // if (btnIds.update)
-    //   newBtns.push(new IconButtonOptions(() => this.showCreateUpdateDiag(this.clients[this.selected[0]]), 'accent', 'create', 'Update selected Client'));
-    // if (btnIds.delete)
-    //   newBtns.push(new IconButtonOptions(() => this.showDeleteDiag(this.clients[this.selected[0]]), 'accent', 'delete_outline', `Delete selected Client${this.selected.length > 1 ? 's' : ''}`));
+    if (btnIds.update)
+      newBtns.push(new IconButtonOptions(() => this.showCreateUpdateDiag(this._appointments[this.selected[0]]), 'accent', 'create', 'Update selected Appointment'));
+    if (btnIds.cancel)
+      newBtns.push(new IconButtonOptions(() => this.showCancelDiag(this._appointments[this.selected[0]]), 'accent', 'cancel', `Cancel the selected Appointment${this.selected.length > 1 ? 's' : ''}`));
 
     const options: ToolbarOptions = {
       title: 'Appointments',
@@ -86,7 +134,7 @@ export class AppointmentComponent implements OnInit {
 
   private showCreateUpdateDiag = (appt?: Appointment): void => {
     const dialogRef = this.dialog.open(CreateUpdateAppointmentComponent, {
-      data: appt ? { client: appt } : null,
+      data: appt ? { appointment: appt } : null,
       autoFocus: true,
       disableClose: true,
       hasBackdrop: true,
@@ -94,35 +142,41 @@ export class AppointmentComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(_ => {
-      console.log(`The dialog was closed (${appt ? 'update' : 'add'})`);
+      console.log(`The (${appt ? 'update' : 'create'}) dialog was closed `);
       if (_) {
         if (appt)
-          this.appointments = this.appointments.filter(_ => _.id !== appt.id);
-        this.appointments.push(_);
-        this.appointments.sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+          this._appointments = this._appointments.filter(_ => _.id !== appt.id);
+        this._appointments.push(_);
+        this._appointments.sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
         this.afterAppointmentsChange();
         this.setStatuses();
       }
     });
   }
 
-  // private showDeleteDiag = (client: Client): void => {
-  //   const dialogRef = this.dialog.open(DeleteClientComponent, {
-  //     data: { client: client },
-  //     autoFocus: true,
-  //     disableClose: true,
-  //     hasBackdrop: true,
-  //     minWidth: 320
-  //   });
+  private showCancelDiag = (appt: Appointment): void => {
+    const dialogRef = this.dialog.open(ConfirmDiagComponent, {
+      data: { title: 'Confirm Cancellation', message: 'Are you sure you want to cancel this appointment?', icon: new IconOptions('warning', 'accent') },
+      autoFocus: true,
+      disableClose: true,
+      hasBackdrop: true,
+      minWidth: 320
+    });
 
-  //   dialogRef.afterClosed().subscribe(_ => {
-  //     console.log(`The delete dialog was closed`);
-  //     if (_) {
-  //       this.clients = this.clients.filter(_ => _.id !== client.id);
-  //       this.afterClientsChange();
-  //     }
-  //   });
-  // }
+    dialogRef.afterClosed().subscribe(_ => {
+      console.log(`The cancel dialog was closed`);
+      if (_) {
+        appt.cancelled = true;
+        this.appointmentService.updateAppointment(appt).subscribe(updatedAppt => {
+          this._appointments = this._appointments.filter(_ => _.id !== appt.id);
+          this._appointments.push(updatedAppt);
+          this._appointments.sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+          this.afterAppointmentsChange();
+          this.setStatuses();
+        });
+      }
+    });
+  }
 
   // private showDetailDiag = (client: Client): void => {
   //   const dialogRef = this.dialog.open(ClientDetailComponent, {
@@ -140,28 +194,27 @@ export class AppointmentComponent implements OnInit {
 
   private setStatuses = () => {
     this.statuses = new Map<number, { status: AppointmentStatus, date: Date, display: string }>();
-    this.appointments.forEach(_ => {
-      let status, date;
-      if (_.cancelled)
-        status = AppointmentStatus.CANCELED;
-      else if (_.routed[0]) {
-        status = AppointmentStatus.ROUTED;
-        date = _.routed[1];
-      } else if (_.started[0]) {
-        status = AppointmentStatus.STARTED;
-        date = _.started[1];
-      } else if (_.completed[0]) {
-        status = AppointmentStatus.COMPLETED;
-        date = _.completed[1];
-      } else
-        status = AppointmentStatus.PENDING;
-      this.statuses.set(_.id, { status: status, date: date, display: date ? `${status} (${date})` : status });
+    this._appointments.forEach(_ => {
+      let date;
+      switch (_.status) {
+        case AppointmentStatus.COMPLETED:
+          date = _.completed[1];
+          break;
+        case AppointmentStatus.STARTED:
+          date = _.started[1];
+          break;
+        case AppointmentStatus.ROUTED:
+          date = _.routed[1];
+          break;
+      };
+      this.statuses.set(_.id, { status: _.status, date: date, display: _.getDisplayStatus() + (date ? ` (${date})` : '') });
     });
   }
 
   private afterAppointmentsChange = (): void => {
-    this.hasAppointments = this.appointments.length > 0;
-    this.dataSource.data = this.appointments;
+    this.hasAppointments = this._appointments.length > 0;
+    this.sortAppointments();
+    this.dataSource.data = this._appointments;
     this.dataSource._updateChangeSubscription();
   }
 
@@ -172,5 +225,15 @@ export class AppointmentComponent implements OnInit {
       this.displayedFields = this.tabletFields.map(_ => _);
     else
       this.displayedFields = this.mobileFields.map(_ => _);
+  }
+
+  private sortAppointments = (): void => {
+    this._appointments.sort((a, b) => {
+      if (a.cancelled && !b.cancelled)
+        return 1;
+      else if (a.cancelled == b.cancelled)
+        return 0;
+      return -1;
+    });
   }
 }

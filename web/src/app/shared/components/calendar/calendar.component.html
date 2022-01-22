@@ -1,0 +1,28 @@
+<div class="calendar-container">
+  <div *ngIf="hasAppointments" fxLayout="row" fxLayoutAlign="start center" style="width: 100%;">
+    <div fxFlex></div>
+    <button mat-icon-button fxFlex="none" (click)="prevMonth()"><mat-icon color="accent" class="xl-icon zoom">navigate_before</mat-icon></button>
+    <div fxFlex="none" fxLayoutAlign="center center"><h2 fxFlex>{{ calendarDateStr }}</h2></div>
+    <button mat-icon-button fxFlex="none" (click)="nextMonth()"><mat-icon color="accent" class="xl-icon zoom">navigate_next</mat-icon></button>
+    <div fxFlex></div>
+  </div>
+  <mat-grid-list cols="7" rowHeight="6:1" gutterSize="0px">  
+    <mat-grid-tile class="header">Sunday</mat-grid-tile>
+    <mat-grid-tile class="header">Monday</mat-grid-tile>
+    <mat-grid-tile class="header">Tuesday</mat-grid-tile>
+    <mat-grid-tile class="header">Wednesday</mat-grid-tile>
+    <mat-grid-tile class="header">Thursday</mat-grid-tile>
+    <mat-grid-tile class="header">Friday</mat-grid-tile>
+    <mat-grid-tile class="header">Saturday</mat-grid-tile>
+  </mat-grid-list>
+  <mat-grid-list cols="7" rowHeight="2:1" gutterSize="0px">
+    <mat-grid-tile *ngFor="let f of beginFiller"></mat-grid-tile>
+    <mat-grid-tile *ngFor="let day of days" class="cell">
+      <mat-grid-tile-header>{{ day + 1 }}</mat-grid-tile-header>
+      <div *ngFor="let appt of currentMonthAppointments.get(day + 1)" fxFlex fxLayout="column" fxLayoutAlign="start start" class="cell-appointments-list">
+        <div (click)="openAppointment(appt)" fxFlexFill class="cell-appointment">{{ appt.date | date:"h:mmaaaaa\'m\'" }} {{ appt.technician.firstName }} {{ appt.technician.lastName }} for {{ appt.client.lastName }}</div>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile *ngFor="let f of endFiller"></mat-grid-tile>
+  </mat-grid-list>
+</div>

@@ -1,33 +1,48 @@
-<div *ngIf="hasAppointments" class="appointment-container">
-  <mat-table class="all-radius table mat-elevation-z2" [dataSource]="dataSource">
-    <ng-container matColumnDef="client">
-      <mat-header-cell *matHeaderCellDef class="header-cell">Client</mat-header-cell>
-      <mat-cell *matCellDef="let appointment" class="row-cell">{{ appointment.client.firstName }} {{ appointment.client.lastName }} ({{ appointment.client.type === 'RES' ? 'Residentail' : 'Commercial' }})</mat-cell>
-    </ng-container>
-    <ng-container matColumnDef="technician">
-      <mat-header-cell *matHeaderCellDef class="header-cell">Technician</mat-header-cell>
-      <mat-cell *matCellDef="let appointment" class="row-cell">{{ appointment.technician.firstName }} {{ appointment.technician.lastName }}</mat-cell>
-    </ng-container>
-    <ng-container matColumnDef="date">
-      <mat-header-cell *matHeaderCellDef class="header-cell">Date</mat-header-cell>
-      <mat-cell *matCellDef="let appointment" class="row-cell">{{ appointment.date | date }}</mat-cell>
-    </ng-container>
-    <ng-container matColumnDef="windowLength">
-      <mat-header-cell *matHeaderCellDef class="header-cell">Appt. Length</mat-header-cell>
-      <mat-cell *matCellDef="let appointment" class="row-cell">{{ appointment.windowLength | minutes }}</mat-cell>
-    </ng-container>
-    <ng-container matColumnDef="customerNotes">
-      <mat-header-cell *matHeaderCellDef class="header-cell">Customer Notes</mat-header-cell>
-      <mat-cell *matCellDef="let appointment" class="row-cell">{{ appointment.customerNotes }}</mat-cell>
-    </ng-container>
-    <ng-container matColumnDef="status">
-      <mat-header-cell *matHeaderCellDef class="header-cell">Appt. Status</mat-header-cell>
-      <mat-cell *matCellDef="let appointment" class="row-cell">{{ statuses.get(appointment.id).display }}</mat-cell>
-    </ng-container>
-
-    <mat-header-row class="top-radius header" *matHeaderRowDef="displayedFields"></mat-header-row>
-    <mat-row class="selectable row" [ngClass]="{ 'selected': selected.includes(i), 'selectable': !selected.includes(i) }" (click)="onRowClick(i)" *matRowDef="let appointment; columns: displayedFields; let i=index"></mat-row>
-    <mat-footer-row class="bottom-radius footer" *matFooterRowDef="columnsToDisplay"></mat-footer-row>
-  </mat-table>
+<div [style]="{ 'hidden': !hasAppointments}" class="appointment-container">
+  <mat-tab-group class="mat-elevation-z2">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="sm-icon">calendar_view_month</mat-icon>
+        Calendar
+      </ng-template>
+      <app-calendar [appointments]="appointments"></app-calendar>
+    </mat-tab>
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="sm-icon">list</mat-icon>
+        Appointments List
+      </ng-template>
+      <table mat-table class="all-radius table" [dataSource]="dataSource" matSort matPaginator>
+        <ng-container matColumnDef="client">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header id="client" class="header-cell">Client</th>
+          <td mat-cell *matCellDef="let appointment" class="row-cell">{{ appointment?.client.firstName }} {{ appointment?.client.lastName }} ({{ appointment.client.type === 'RES' ? 'R' : 'C' }})</td>
+        </ng-container>
+        <ng-container matColumnDef="technician">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header id="tech" class="header-cell">Technician</th>
+          <td mat-cell *matCellDef="let appointment" class="row-cell">{{ appointment.technician.firstName }} {{ appointment.technician.lastName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header id="date" class="header-cell">Date</th>
+          <td mat-cell *matCellDef="let appointment" class="row-cell">{{ appointment.date | date }}</td>
+        </ng-container>
+        <ng-container matColumnDef="windowLength">
+          <th mat-header-cell *matHeaderCellDef class="header-cell">Appt. Length</th>
+          <td mat-cell *matCellDef="let appointment" class="row-cell">{{ appointment.windowLength | minutes }}</td>
+        </ng-container>
+        <ng-container matColumnDef="customerNotes">
+          <th mat-header-cell *matHeaderCellDef class="header-cell">Customer Notes</th>
+          <td mat-cell *matCellDef="let appointment" class="row-cell">{{ appointment.customerNotes | ellipsis:25 }}</td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef class="header-cell">Appt. Status</th>
+          <td mat-cell *matCellDef="let appointment" class="row-cell">{{ statuses?.get(appointment.id).display }}</td>
+        </ng-container>
+      
+        <tr mat-header-row class="top-radius header" *matHeaderRowDef="displayedFields"></tr>
+        <tr mat-row class="selectable row" [ngClass]="{ 'selected': selected.includes(i), 'selectable': !selected.includes(i) }" (click)="onRowClick(i)" *matRowDef="let appointment; columns: displayedFields; let i=index"></tr>
+        <!-- <mat-paginator #paginatorEle [length]="this.dataSource?.data?.length" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator> -->
+      </table>
+    </mat-tab>
+</mat-tab-group>
 </div>
 <div *ngIf="!hasAppointments">No appointments found!</div>

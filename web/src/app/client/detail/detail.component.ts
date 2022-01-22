@@ -3,7 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Client } from '../client.model';
 
 @Component({
-  selector: 'app-detail',
+  selector: 'app-client-detail',
   templateUrl: './detail.component.html',
   styleUrls: ['./detail.component.scss']
 })
