@@ -59,6 +59,6 @@ export class AppComponent {
   }
 
   private setWebMargin = () => {
-    this.margin = 'margin: 24px;';
+    this.margin = 'margin: 16px 24px;';
   }
 }

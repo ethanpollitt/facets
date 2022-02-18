@@ -1,4 +1,4 @@
-import { MatMenuTrigger } from '@angular/material/menu';
+import { MatMenu } from '@angular/material/menu';
 
 export class ToolbarOptions {
   title?: string;
@@ -10,13 +10,11 @@ export type ButtonType = 'base' | 'icon' | 'text' | 'menu' | 'fab';
 export type ButtonColor = 'primary' | 'accent' | 'default';
 
 export class ButtonOptionsBase {
-  private _action: Function;
   private _color: ButtonColor;
   private _tooltip?: string;
   protected _type: ButtonType = 'base';
 
-  constructor(action: Function, color: ButtonColor, tooltip?: string) {
-    this._action = action;
+  constructor(color: ButtonColor, tooltip?: string) {
     this._color = color;
     if (tooltip)
       this._tooltip = tooltip;
@@ -24,10 +22,6 @@ export class ButtonOptionsBase {
 
   get type(): ButtonType {
     return this._type;
-  }
-
-  get action(): Function {
-    return this._action;
   }
 
   get color(): ButtonColor {
@@ -39,13 +33,26 @@ export class ButtonOptionsBase {
   }
 }
 
-export class IconButtonOptions extends ButtonOptionsBase {
+export class ActionButtonOptionsBase extends ButtonOptionsBase {
+  private _action: Function;
+
+  constructor(action: Function, color: ButtonColor, tooltip?: string) {
+    super(color, tooltip);
+    this._type = 'base';
+    this._action = action;
+  }
+
+  get action(): Function {
+    return this._action;
+  }
+}
+
+export class IconButtonOptions extends ActionButtonOptionsBase {
   protected _icon: string;
 
   constructor(action: Function, color: ButtonColor, icon: string, tooltip?: string) {
     super(action, color, tooltip);
     this._type = 'icon';
-
     this._icon = icon;
   }
 
@@ -61,13 +68,12 @@ export class IconFabOptions extends IconButtonOptions {
   }
 }
 
-export class TextButtonOptions extends ButtonOptionsBase {
+export class TextButtonOptions extends ActionButtonOptionsBase {
   private _text: string;
 
   constructor(action: Function, color: ButtonColor, text: string, tooltip?: string) {
     super(action, color, tooltip);
     this._type = 'text';
-
     this._text = text;
   }
 
@@ -77,16 +83,25 @@ export class TextButtonOptions extends ButtonOptionsBase {
 }
 
 export class MenuButtonOptions extends ButtonOptionsBase {
-  private _trigger: MatMenuTrigger;
+  private _trigger: MatMenu;
+  private _icon: string;
 
-  constructor(action: Function, color: ButtonColor, trigger: MatMenuTrigger, tooltip?: string) {
-    super(action, color, tooltip);
+  constructor(color: ButtonColor, trigger: MatMenu)
+  constructor(color: ButtonColor, trigger: MatMenu, icon?: string)
+  constructor(color: ButtonColor, trigger: MatMenu, icon?: string, tooltip?: string)
+  constructor(color: ButtonColor, trigger: MatMenu, icon?: string, tooltip?: string) {
+    super(color, tooltip);
     this._type = 'menu';
-
-    this._trigger = trigger;
+    this._trigger = trigger;  
+    if (icon)
+      this._icon = icon;
   }
 
-  get trigger(): MatMenuTrigger {
+  get icon(): string {
+    return this._icon;
+  }
+
+  get trigger(): MatMenu {
     return this._trigger;
   }
 }

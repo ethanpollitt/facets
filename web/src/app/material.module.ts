@@ -25,6 +25,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { CdkColumnDef } from '@angular/cdk/table';
+import { MatMenuModule } from '@angular/material/menu';
 
 const modules = [
   MatCardModule,
@@ -51,6 +52,7 @@ const modules = [
   MatButtonToggleModule,
   MatChipsModule,
   MatGridListModule,
+  MatMenuModule,
 ];
 
 @NgModule({

@@ -1,28 +1,32 @@
 .calendar-container {
-  margin: 10px;
+  // margin: 10px;
+  padding: 8px;
 }
 
 .mat-grid-list {
   .mat-grid-tile {
     border: 1px solid black;
-      .cell-appointments-list {
-        .cell-appointment {
-          margin: 0 1px;
-          padding: 0 10px;
-          transition: .15s ease-in-out;
-          -moz-transition: .15s ease-in-out;
-          -webkit-transition: .15s ease-in-out;
-        }
-        .cell-appointment:hover {
-          background-color: rgba(211, 47, 47, .15);
-          border-radius: 3px;
-          cursor: pointer;
-        }
+    .cell-appointments-list {
+      .cell-appointment {
+        font-size: .9em;
+        margin: 0 1px;
+        padding: 0 10px;
+        transition: .15s ease-in-out;
+        -moz-transition: .15s ease-in-out;
+        -webkit-transition: .15s ease-in-out;
       }
+      .cell-appointment:hover {
+        background-color: rgba(211, 47, 47, .15);
+        border-radius: 3px;
+        cursor: pointer;
+      }
+    }
   }
 }
 
 .mat-grid-tile .mat-grid-tile-header {
+  padding: 0 8px;
+  height: 28px;
   background: none;
   color: black;
 }

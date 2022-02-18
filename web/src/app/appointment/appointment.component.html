@@ -1,17 +1,9 @@
-<div [style]="{ 'hidden': !hasAppointments}" class="appointment-container">
-  <mat-tab-group class="mat-elevation-z2">
-    <mat-tab>
-      <ng-template mat-tab-label>
-        <mat-icon class="sm-icon">calendar_view_month</mat-icon>
-        Calendar
-      </ng-template>
+<div [style]="{ 'hidden': !hasAppointments }" class="appointment-container">
+    <div [hidden]="view === 'list'" class="mat-elevation-z2">
       <app-calendar [appointments]="appointments"></app-calendar>
-    </mat-tab>
-    <mat-tab>
-      <ng-template mat-tab-label>
-        <mat-icon class="sm-icon">list</mat-icon>
-        Appointments List
-      </ng-template>
+    </div>
+
+    <div [hidden]="view === 'calendar'" class="mat-elevation-z2">
       <table mat-table class="all-radius table" [dataSource]="dataSource" matSort matPaginator>
         <ng-container matColumnDef="client">
           <th mat-header-cell *matHeaderCellDef mat-sort-header id="client" class="header-cell">Client</th>
@@ -42,7 +34,17 @@
         <tr mat-row class="selectable row" [ngClass]="{ 'selected': selected.includes(i), 'selectable': !selected.includes(i) }" (click)="onRowClick(i)" *matRowDef="let appointment; columns: displayedFields; let i=index"></tr>
         <!-- <mat-paginator #paginatorEle [length]="this.dataSource?.data?.length" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator> -->
       </table>
-    </mat-tab>
-</mat-tab-group>
+    </div>
 </div>
 <div *ngIf="!hasAppointments">No appointments found!</div>
+
+<mat-menu #viewMenu="matMenu">
+  <button mat-menu-item [disabled]="view === 'list'" (click)="setView('list')">
+    <mat-icon>list</mat-icon>
+    <span>Appointments List</span>
+  </button>
+  <button mat-menu-item [disabled]="view === 'calendar'" (click)="setView('calendar')">
+    <mat-icon>calendar_month</mat-icon>
+    <span>Calendar</span>
+  </button>
+</mat-menu>

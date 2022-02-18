@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 
 import { AppService } from '../app.service';
-import { IconButtonOptions, ToolbarOptions } from '../nav/toolbar/toolbar.model';
+import { ButtonOptionsBase, IconButtonOptions, MenuButtonOptions, ToolbarOptions } from '../nav/toolbar/toolbar.model';
 import { ToolbarService } from '../nav/toolbar/toolbar.service';
 import { ConfirmDiagComponent } from '../shared/components/confirm-diag/confirm-diag.component';
 import { Appointment, AppointmentStatus } from './appointment.model';
@@ -13,6 +13,7 @@ import { Device } from '../shared/models/device';
 import { IconOptions } from '../shared/models/icon';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatMenu } from '@angular/material/menu';
 
 @Component({
   selector: 'app-appointment',
@@ -20,15 +21,18 @@ import { MatPaginator } from '@angular/material/paginator';
   styleUrls: ['./appointment.component.scss']
 })
 export class AppointmentComponent implements OnInit {
+  @ViewChild(MatMenu) viewMenu: MatMenu;
+
   hasAppointments: boolean = false;
   statuses: Map<number, { status: AppointmentStatus, date: Date, display: string }>;
-  device: Device;
   displayedFields: string[] = [];
   selected: number[] = [];
+  view: 'calendar' | 'list' = 'calendar';
   
   dataSource: MatTableDataSource<Appointment> = new MatTableDataSource<Appointment>();
   numRecords: number = 0;
   
+  private device: Device;
   private sort: MatSort;
   private paginator: MatPaginator;
   private _appointments: Appointment[];
@@ -49,8 +53,6 @@ export class AppointmentComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.setBtns({ add: true });
-
     const s = this.appointmentService.getAppointments().subscribe(_ => {
       // Set internal clients object & initialize data source
       this._appointments = _;
@@ -80,6 +82,8 @@ export class AppointmentComponent implements OnInit {
   }
 
   ngAfterViewInit(): void {
+    this.setBtns({ add: true, view: true });
+
     if (!this.dataSource.paginator)
       this.dataSource.paginator = this.paginator;
   }
@@ -98,6 +102,13 @@ export class AppointmentComponent implements OnInit {
     return this._appointments;
   }
 
+  public setView = (view: 'calendar' | 'list') => {
+    this.view = view;
+    this.selected = [];
+    
+    this.setBtns({ add: true, view: true });
+  }
+
   public onRowClick = (i: number): void => {
     if (this.selected.includes(i))
       this.selected = [];
@@ -108,18 +119,18 @@ export class AppointmentComponent implements OnInit {
 
     this.setBtns({ 
       add: true, 
-      detail: this.selected.length > 0, 
+      view: true, 
       cancel: this.selected.length > 0 && !this._appointments[i].cancelled,
       update: this.selected.length === 1 
     });
   }
 
-  private setBtns = (btnIds: { add?: boolean, update?: boolean, cancel?: boolean, detail?: boolean }): void => {
-    const newBtns: IconButtonOptions[] = [];
+  private setBtns = (btnIds: { add?: boolean, update?: boolean, cancel?: boolean, view?: boolean }): void => {
+    const newBtns: ButtonOptionsBase[] = [];
+    if (btnIds.view)
+      newBtns.push(new MenuButtonOptions('accent', this.viewMenu, 'visibility', 'Switch view of Appointments'));
     if (btnIds.add)
       newBtns.push(new IconButtonOptions(() => this.showCreateUpdateDiag(), 'accent', 'add_circle_outline', 'Create Appointment'));
-    // if (btnIds.detail)
-    //   newBtns.push(new IconButtonOptions(() => this.showDetailDiag(this.clients[this.selected[0]]), 'accent', 'description', `Show details on selected Client`));
     if (btnIds.update)
       newBtns.push(new IconButtonOptions(() => this.showCreateUpdateDiag(this._appointments[this.selected[0]]), 'accent', 'create', 'Update selected Appointment'));
     if (btnIds.cancel)

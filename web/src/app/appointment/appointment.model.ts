@@ -4,8 +4,8 @@ import { Client } from '../client/client.model';
 import { Technician } from '../technician/technician.model';
 
 export class Appointment extends MongooseSchemaModel {
-  client: Client | string;
-  technician: Technician | string;
+  client: any;
+  technician: any;
   date: Date;
   windowLength: number;  // minutes
   customerNotes?: string;

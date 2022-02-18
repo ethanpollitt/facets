@@ -1,8 +1,10 @@
 import { DatePipe } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { AppService } from 'src/app/app.service';
 import { Appointment } from 'src/app/appointment/appointment.model';
 import { AppointmentDetailComponent } from 'src/app/appointment/detail/detail.component';
+import { Device } from '../../models/device';
 
 @Component({
   selector: 'app-calendar',
@@ -18,7 +20,10 @@ export class CalendarComponent implements OnInit {
   calendarDateStr: string;
   currentMonthAppointments: Map<number, Appointment[]> = new Map();
   hasAppointments: boolean = false;
+  headerMarginRatio: string = '6:1';
+  rowMarginRatio: string = '1.5:1';
 
+  private device: Device;
   private currentDate: Date;
   private currentMonth: number;
   private startOfMonth: Date;
@@ -27,8 +32,14 @@ export class CalendarComponent implements OnInit {
 
   constructor(
     private dialog: MatDialog,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private appService: AppService
   ) {
+    this.appService.deviceUpdates.subscribe(_ => {
+      this.device = _;
+      this.setSizes();
+    });
+
     let today = new Date();
     this.setMonth(today);
   }
@@ -87,6 +98,19 @@ export class CalendarComponent implements OnInit {
     this.currentDate.setMonth(this.currentMonth - 1);
     this.setMonth(this.currentDate);
     this.setCurrentMonthAppointments();
+  }
+
+  private setSizes = (): void => {
+    if (this.device.isDesktop) {
+      this.headerMarginRatio = '8:1';
+      this.rowMarginRatio = '1.75:1';
+    } else if (this.device.isTablet) {
+      this.headerMarginRatio = '6:1';
+      this.rowMarginRatio = '1.5:1';
+    } else if (this.device.isMobile) {
+      this.headerMarginRatio = '3:1';
+      this.rowMarginRatio = '1.25:1';
+    }
   }
 
   private setMonth(date: Date) {
