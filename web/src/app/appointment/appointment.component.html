@@ -1,10 +1,29 @@
-<div [style]="{ 'hidden': !hasAppointments }" class="appointment-container">
+<div class="appointment-container">
     <div [hidden]="view === 'list'" class="mat-elevation-z2">
       <app-calendar [appointments]="appointments"></app-calendar>
     </div>
 
     <div [hidden]="view === 'calendar'" class="mat-elevation-z2">
-      <table mat-table class="all-radius table" [dataSource]="dataSource" matSort matPaginator>
+      <div fxLayout="row" fxLayoutAlign="start center">
+        <div fxFlex="none" class="input-sm">
+          <mat-form-field floatLabel="never">
+            <!-- <mat-label>Date</mat-label> -->
+            <input matInput [formControl]="searchControl" type="search" placeholder="Search appointments" aria-label="Search appointments">
+            <mat-error *ngIf="searchControl.invalid && searchControl.touched">Invalid search string</mat-error>
+          </mat-form-field>
+        </div>
+        <div fxFlex></div>
+        <div fxFlex="none" class="buttons">
+          <mat-button-toggle-group [formControl]="filterControl" multiple aria-label="Status filters">
+            <mat-button-toggle [value]="apptStatuses.COMPLETED">Completed</mat-button-toggle>
+            <mat-button-toggle [value]="apptStatuses.PENDING">Pending</mat-button-toggle>
+            <mat-button-toggle [value]="apptStatuses.CANCELED">Canceled</mat-button-toggle>
+          </mat-button-toggle-group>
+        </div>
+      </div>
+      <div *ngIf="!hasAppointments" class="no-appointments">No appointments found!</div>
+
+      <table *ngIf="hasAppointments" mat-table class="all-radius table" [dataSource]="dataSource" matSort matPaginator>
         <ng-container matColumnDef="client">
           <th mat-header-cell *matHeaderCellDef mat-sort-header id="client" class="header-cell">Client</th>
           <td mat-cell *matCellDef="let appointment" class="row-cell">{{ appointment?.client.firstName }} {{ appointment?.client.lastName }} ({{ appointment.client.type === 'RES' ? 'R' : 'C' }})</td>
@@ -36,7 +55,6 @@
       </table>
     </div>
 </div>
-<div *ngIf="!hasAppointments">No appointments found!</div>
 
 <mat-menu #viewMenu="matMenu">
   <button mat-menu-item [disabled]="view === 'list'" (click)="setView('list')">

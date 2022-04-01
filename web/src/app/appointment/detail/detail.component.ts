@@ -28,7 +28,6 @@ export class AppointmentDetailComponent implements OnInit {
   public openClientDetails = (client: any) => {
     if (typeof client === 'string')
       return;
-
     
     const dialogRef = this.dialog.open(ClientDetailComponent, {
       data: { client: client },

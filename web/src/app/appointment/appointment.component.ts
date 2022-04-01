@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 
@@ -14,6 +14,7 @@ import { IconOptions } from '../shared/models/icon';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatMenu } from '@angular/material/menu';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-appointment',
@@ -28,17 +29,21 @@ export class AppointmentComponent implements OnInit {
   displayedFields: string[] = [];
   selected: number[] = [];
   view: 'calendar' | 'list' = 'calendar';
+  apptStatuses = AppointmentStatus;
   
   dataSource: MatTableDataSource<Appointment> = new MatTableDataSource<Appointment>();
   numRecords: number = 0;
+
+  searchControl: FormControl = new FormControl(null);
+  filterControl: FormControl = new FormControl();
   
   private device: Device;
   private sort: MatSort;
   private paginator: MatPaginator;
   private _appointments: Appointment[];
-  private allFields: string[] = ["client", "date", "windowLength", "technician", "customerNotes", "status"];
-  private tabletFields: string[] = ["client", "date", "technician", "status"];
-  private mobileFields: string[] = ["client", "date", "technician"];
+  private allFields: string[] = ['client', 'date', 'windowLength', 'technician', 'customerNotes', 'status'];
+  private tabletFields: string[] = ['client', 'date', 'technician', 'status'];
+  private mobileFields: string[] = ['client', 'date', 'technician'];
 
   constructor(
     private dialog: MatDialog,
@@ -79,6 +84,31 @@ export class AppointmentComponent implements OnInit {
 
       s.unsubscribe();
     });
+
+    this.searchControl.valueChanges.subscribe((_: string) => {
+      if ([null, undefined, ''].includes(_)) {
+        this.dataSource.data = this._appointments;
+      } else {
+        const searchStrings: string[] = _.toLowerCase().split(' ');
+        this.dataSource.data = this._appointments.filter(__ => 
+          searchStrings.some(ss => __.client?.firstName.toLowerCase().includes(ss))
+          || searchStrings.some(ss => __.client?.lastName.toLowerCase().includes(ss))
+          || searchStrings.some(ss => __.technician?.firstName.toLowerCase().includes(ss))
+          || searchStrings.some(ss => __.technician?.lastName.toLowerCase().includes(ss))
+          || searchStrings.some(ss => __.getDisplayStatus().toLowerCase().includes(ss))
+        );
+      }
+      this.afterAppointmentsChange();
+    });
+
+    this.filterControl.valueChanges.subscribe((_: AppointmentStatus[]) => {
+      if (_.length < 1) {
+        this.dataSource.data = this._appointments;
+      } else {
+        this.dataSource.data = this._appointments.filter(__ => _.includes(__.status));
+      }
+      this.afterAppointmentsChange();
+    })
   }
 
   ngAfterViewInit(): void {
@@ -159,6 +189,7 @@ export class AppointmentComponent implements OnInit {
           this._appointments = this._appointments.filter(_ => _.id !== appt.id);
         this._appointments.push(_);
         this._appointments.sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+        this.dataSource.data = this._appointments;
         this.afterAppointmentsChange();
         this.setStatuses();
       }
@@ -182,6 +213,7 @@ export class AppointmentComponent implements OnInit {
           this._appointments = this._appointments.filter(_ => _.id !== appt.id);
           this._appointments.push(updatedAppt);
           this._appointments.sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+          this.dataSource.data = this._appointments;
           this.afterAppointmentsChange();
           this.setStatuses();
         });
@@ -223,9 +255,8 @@ export class AppointmentComponent implements OnInit {
   }
 
   private afterAppointmentsChange = (): void => {
-    this.hasAppointments = this._appointments.length > 0;
+    this.hasAppointments = (this.dataSource.data?.length > 0) || false;
     this.sortAppointments();
-    this.dataSource.data = this._appointments;
     this.dataSource._updateChangeSubscription();
   }
 

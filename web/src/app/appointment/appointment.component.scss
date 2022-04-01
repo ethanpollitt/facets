@@ -1,5 +1,10 @@
 @import '~@angular/material/theming';
 
+.input-sm { 
+  font-size: .8em;
+  margin: 8px 0 0 12px;
+}
+
 .table {
   width: 100%;
   background-color: mat-color($mat-light-theme-background, card);
