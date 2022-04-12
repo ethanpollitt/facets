@@ -10,13 +10,15 @@ import { AppointmentComponent } from './appointment.component';
 import { AppointmentService } from './appointment.service';
 import { CreateUpdateAppointmentComponent } from './create-update/create-update.component';
 import { AppointmentDetailComponent } from './detail/detail.component';
+import { UpdateStatusComponent } from './update-status/update-status.component'
 import { MinutesPipe } from '../shared/pipes/minutes.pipe';
 
 @NgModule({
   declarations: [
     AppointmentComponent,
     CreateUpdateAppointmentComponent,
-    AppointmentDetailComponent
+    AppointmentDetailComponent,
+    UpdateStatusComponent
   ],
   imports: [
     CommonModule,

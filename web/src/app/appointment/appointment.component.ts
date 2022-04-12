@@ -15,6 +15,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatMenu } from '@angular/material/menu';
 import { FormControl } from '@angular/forms';
+import { UpdateStatusComponent } from './update-status/update-status.component';
 
 @Component({
   selector: 'app-appointment',
@@ -58,32 +59,7 @@ export class AppointmentComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    const s = this.appointmentService.getAppointments().subscribe(_ => {
-      // Set internal clients object & initialize data source
-      this._appointments = _;
-      this.hasAppointments = this._appointments.length > 0;
-      this.sortAppointments();
-      this.dataSource.data = this._appointments;
-      if (this.paginator)
-        this.dataSource.paginator = this.paginator;
-      if (this.sort)
-        this.dataSource.sort = this.sort;
-
-      this.dataSource.sortingDataAccessor = (item, property) => {
-        if (typeof item === 'object') {
-          switch (property) {
-            case 'client': return  item.client['id'];
-            case 'tech': return  item.technician['id'];
-            default: return item[property];
-          }
-        } else
-          return item[property];
-      }
-
-      this.setStatuses();
-
-      s.unsubscribe();
-    });
+    this.reloadAppointments();
 
     this.searchControl.valueChanges.subscribe((_: string) => {
       if ([null, undefined, ''].includes(_)) {
@@ -119,20 +95,20 @@ export class AppointmentComponent implements OnInit {
   }
 
   @ViewChild('paginatorEle') 
-  set matPaginator( paginator: MatPaginator){
+  set matPaginator( paginator: MatPaginator) {
     this.paginator = paginator;
   }
 
   @ViewChild(MatSort) 
-  set matSort( sort: MatSort){
+  set matSort( sort: MatSort) {
     this.sort = sort;
   }
 
-  get appointments() {
+  get appointments(): Appointment[] {
     return this._appointments;
   }
 
-  public setView = (view: 'calendar' | 'list') => {
+  public setView = (view: 'calendar' | 'list'): void => {
     this.view = view;
     this.selected = [];
     
@@ -147,15 +123,17 @@ export class AppointmentComponent implements OnInit {
       this.selected = [i];
       // this.selected.push(i);
 
+    const selectedAppt = this._appointments[i];
     this.setBtns({ 
       add: true, 
       view: true, 
-      cancel: this.selected.length > 0 && !this._appointments[i].cancelled,
-      update: this.selected.length === 1 
+      cancel: this.selected.length > 0 && !selectedAppt.cancelled,
+      update: this.selected.length === 1,
+      updateStatus: this.selected.length === 1 && (!selectedAppt.completed[0] && !selectedAppt.cancelled)
     });
   }
 
-  private setBtns = (btnIds: { add?: boolean, update?: boolean, cancel?: boolean, view?: boolean }): void => {
+  private setBtns = (btnIds: { add?: boolean, update?: boolean, cancel?: boolean, view?: boolean, updateStatus?: boolean }): void => {
     const newBtns: ButtonOptionsBase[] = [];
     if (btnIds.view)
       newBtns.push(new MenuButtonOptions('accent', this.viewMenu, 'visibility', 'Switch view of Appointments'));
@@ -164,7 +142,9 @@ export class AppointmentComponent implements OnInit {
     if (btnIds.update)
       newBtns.push(new IconButtonOptions(() => this.showCreateUpdateDiag(this._appointments[this.selected[0]]), 'accent', 'create', 'Update selected Appointment'));
     if (btnIds.cancel)
-      newBtns.push(new IconButtonOptions(() => this.showCancelDiag(this._appointments[this.selected[0]]), 'accent', 'cancel', `Cancel the selected Appointment${this.selected.length > 1 ? 's' : ''}`));
+      newBtns.push(new IconButtonOptions(() => this.showCancelDiag(this._appointments[this.selected[0]]), 'accent', 'cancel', 'Cancel the selected Appointment'));
+    if (btnIds.updateStatus)
+      newBtns.push(new IconButtonOptions(() => this.showUpdateStatusDiag(this._appointments[this.selected[0]]), 'accent', 'update', 'Update the status of the selected Appointment'));
 
     const options: ToolbarOptions = {
       title: 'Appointments',
@@ -221,6 +201,29 @@ export class AppointmentComponent implements OnInit {
     });
   }
 
+  private showUpdateStatusDiag = (appt: Appointment): void => {
+    const dialogRef = this.dialog.open(UpdateStatusComponent, {
+      data: appt ? { appointment: appt } : null,
+      autoFocus: true,
+      disableClose: true,
+      hasBackdrop: true,
+      minWidth: 320
+    });
+
+    dialogRef.afterClosed().subscribe(_ => {
+      console.log(`The (${appt ? 'update' : 'create'}) dialog was closed `);
+      if (_) {
+        if (appt)
+          this._appointments = this._appointments.filter(_ => _.id !== appt.id);
+        this._appointments.push(_);
+        this._appointments.sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+        this.dataSource.data = this._appointments;
+        this.afterAppointmentsChange();
+        this.setStatuses();
+      }
+    });
+  }
+
   // private showDetailDiag = (client: Client): void => {
   //   const dialogRef = this.dialog.open(ClientDetailComponent, {
   //     data: { client: client },
@@ -235,7 +238,36 @@ export class AppointmentComponent implements OnInit {
   //   });
   // }
 
-  private setStatuses = () => {
+  private reloadAppointments = (): void => {
+    const s = this.appointmentService.getAppointments().subscribe(_ => {
+      // Set internal clients object & initialize data source
+      this._appointments = _;
+      this.hasAppointments = this._appointments.length > 0;
+      this.sortAppointments();
+      this.dataSource.data = this._appointments;
+      if (this.paginator)
+        this.dataSource.paginator = this.paginator;
+      if (this.sort)
+        this.dataSource.sort = this.sort;
+
+      this.dataSource.sortingDataAccessor = (item, property) => {
+        if (typeof item === 'object') {
+          switch (property) {
+            case 'client': return  item.client['id'];
+            case 'tech': return  item.technician['id'];
+            default: return item[property];
+          }
+        } else
+          return item[property];
+      }
+
+      this.setStatuses();
+
+      s.unsubscribe();
+    });
+  }
+
+  private setStatuses = (): void => {
     this.statuses = new Map<number, { status: AppointmentStatus, date: Date, display: string }>();
     this._appointments.forEach(_ => {
       let date;

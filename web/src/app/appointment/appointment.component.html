@@ -17,6 +17,8 @@
           <mat-button-toggle-group [formControl]="filterControl" multiple aria-label="Status filters">
             <mat-button-toggle [value]="apptStatuses.COMPLETED">Completed</mat-button-toggle>
             <mat-button-toggle [value]="apptStatuses.PENDING">Pending</mat-button-toggle>
+            <mat-button-toggle [value]="apptStatuses.ROUTED">Routed</mat-button-toggle>
+            <mat-button-toggle [value]="apptStatuses.STARTED">Started</mat-button-toggle>
             <mat-button-toggle [value]="apptStatuses.CANCELED">Canceled</mat-button-toggle>
           </mat-button-toggle-group>
         </div>
