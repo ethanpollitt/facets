@@ -1,17 +1,26 @@
 <h1 mat-dialog-title>Appointment Details</h1>
 <div mat-dialog-content>
-  <div class="detail-row" fxLayout="row" fxFlexAlign="start center">
-    <div class="row-label" fxFlex="40%">Current Status: </div>
-    <div fxFlex="60%">{{ appt?.getDisplayStatus() }}</div>
+  <div class="detail-row">
+    <div class="label">Current Status: </div>
+    <div>{{ appt?.getDisplayStatus() }}</div>
   </div>
-  <div>
-    <div class="row-label" fxFlex="40%">New Status: </div>
-    <div fxFlex="60%">
+  <div class="detail-row">
+    <div class="label">New Status: </div>
+    <div>
       <mat-form-field appearance="fill">
         <mat-label>Select an option</mat-label>
         <mat-select [formControl]="statusControl">
           <mat-option *ngFor="let status of statuses" [value]="status">{{ status }}</mat-option>
         </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="detail-row" *ngIf="currentStatus === apptStatuses.COMPLETED">
+    <div class="label">Post Notes: </div>
+    <div>
+      <mat-form-field appearance="fill">
+        <mat-label>Select an option</mat-label>
+        <textarea matInput [formControl]="postNotes"></textarea>
       </mat-form-field>
     </div>
   </div>

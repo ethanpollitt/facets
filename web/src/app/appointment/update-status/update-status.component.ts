@@ -12,7 +12,10 @@ import { AppointmentService } from '../appointment.service';
 export class UpdateStatusComponent {
   appt: Appointment;
   statusControl: FormControl = new FormControl();
+  postNotes: FormControl = new FormControl();
   statuses: string[] = [];
+  currentStatus: string;
+  apptStatuses = AppointmentStatus;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { appointment: Appointment },
@@ -27,16 +30,25 @@ export class UpdateStatusComponent {
       this.statuses.push(AppointmentStatus.STARTED, AppointmentStatus.COMPLETED);
     else    
       this.statuses.push(AppointmentStatus.ROUTED, AppointmentStatus.STARTED, AppointmentStatus.COMPLETED);
+
+    this.statusControl.statusChanges.subscribe(_ => {
+      this.currentStatus = this.statusControl.value;
+    });
   }
 
   public apply = (): void => {
-    const status = this.statusControl.value;
-    if (status === AppointmentStatus.ROUTED) 
+    // Set new appointment status
+    if (this.currentStatus === AppointmentStatus.ROUTED) 
       this.appt.routed = [true, new Date()];
-    else if (status === AppointmentStatus.STARTED)
+    else if (this.currentStatus === AppointmentStatus.STARTED)
       this.appt.started = [true, new Date()];
-    else if (status === AppointmentStatus.COMPLETED)
+    else if (this.currentStatus === AppointmentStatus.COMPLETED)
       this.appt.completed = [true, new Date()];
+
+    // Set appointment post notes
+    if (![null, undefined].includes(this.postNotes.value))
+      this.appt.postNotes = this.postNotes.value;
+
     this.appointmentService.updateAppointment(this.appt).subscribe(_ => {
       this.dialogRef.close(_);
     });

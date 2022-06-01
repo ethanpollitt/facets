@@ -16,6 +16,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatMenu } from '@angular/material/menu';
 import { FormControl } from '@angular/forms';
 import { UpdateStatusComponent } from './update-status/update-status.component';
+import { AppointmentDetailComponent } from './detail/detail.component';
 
 @Component({
   selector: 'app-appointment',
@@ -23,7 +24,12 @@ import { UpdateStatusComponent } from './update-status/update-status.component';
   styleUrls: ['./appointment.component.scss']
 })
 export class AppointmentComponent implements OnInit {
-  @ViewChild(MatMenu) viewMenu: MatMenu;
+  @ViewChild(MatMenu) 
+  viewMenu: MatMenu;
+  @ViewChild('paginatorEle', { static: true })
+  private paginator: MatPaginator;
+  @ViewChild(MatSort, { static: true })
+  private sort: MatSort;
 
   hasAppointments: boolean = false;
   statuses: Map<number, { status: AppointmentStatus, date: Date, display: string }>;
@@ -39,8 +45,6 @@ export class AppointmentComponent implements OnInit {
   filterControl: FormControl = new FormControl();
   
   private device: Device;
-  private sort: MatSort;
-  private paginator: MatPaginator;
   private _appointments: Appointment[];
   private allFields: string[] = ['client', 'date', 'windowLength', 'technician', 'customerNotes', 'status'];
   private tabletFields: string[] = ['client', 'date', 'technician', 'status'];
@@ -90,18 +94,9 @@ export class AppointmentComponent implements OnInit {
   ngAfterViewInit(): void {
     this.setBtns({ add: true, view: true });
 
-    if (!this.dataSource.paginator)
-      this.dataSource.paginator = this.paginator;
-  }
-
-  @ViewChild('paginatorEle') 
-  set matPaginator( paginator: MatPaginator) {
-    this.paginator = paginator;
-  }
-
-  @ViewChild(MatSort) 
-  set matSort( sort: MatSort) {
-    this.sort = sort;
+    this.dataSource.paginator = this.paginator;
+    
+    this.setSorting();
   }
 
   get appointments(): Appointment[] {
@@ -126,25 +121,28 @@ export class AppointmentComponent implements OnInit {
     const selectedAppt = this._appointments[i];
     this.setBtns({ 
       add: true, 
-      view: true, 
-      cancel: this.selected.length > 0 && !selectedAppt.cancelled,
-      update: this.selected.length === 1,
+      view: true,
+      detail: this.selected.length === 1,
+      cancel: this.selected.length > 0 && !selectedAppt.cancelled && selectedAppt.status !== AppointmentStatus.COMPLETED,
+      update: this.selected.length === 1 && selectedAppt.status !== AppointmentStatus.COMPLETED,
       updateStatus: this.selected.length === 1 && (!selectedAppt.completed[0] && !selectedAppt.cancelled)
     });
   }
 
-  private setBtns = (btnIds: { add?: boolean, update?: boolean, cancel?: boolean, view?: boolean, updateStatus?: boolean }): void => {
+  private setBtns = (btnIds: { add?: boolean, update?: boolean, cancel?: boolean, view?: boolean, updateStatus?: boolean, detail?: boolean }): void => {
     const newBtns: ButtonOptionsBase[] = [];
     if (btnIds.view)
       newBtns.push(new MenuButtonOptions('accent', this.viewMenu, 'visibility', 'Switch view of Appointments'));
     if (btnIds.add)
       newBtns.push(new IconButtonOptions(() => this.showCreateUpdateDiag(), 'accent', 'add_circle_outline', 'Create Appointment'));
+    if (btnIds.detail)
+      newBtns.push(new IconButtonOptions(() => this.showDetailDiag(this._appointments[this.selected[0]]), 'accent', 'info', 'See appointment details'));
     if (btnIds.update)
-      newBtns.push(new IconButtonOptions(() => this.showCreateUpdateDiag(this._appointments[this.selected[0]]), 'accent', 'create', 'Update selected Appointment'));
-    if (btnIds.cancel)
-      newBtns.push(new IconButtonOptions(() => this.showCancelDiag(this._appointments[this.selected[0]]), 'accent', 'cancel', 'Cancel the selected Appointment'));
+      newBtns.push(new IconButtonOptions(() => this.showCreateUpdateDiag(this._appointments[this.selected[0]]), 'accent', 'create', 'Update details for the selected Appointment'));
     if (btnIds.updateStatus)
       newBtns.push(new IconButtonOptions(() => this.showUpdateStatusDiag(this._appointments[this.selected[0]]), 'accent', 'update', 'Update the status of the selected Appointment'));
+    if (btnIds.cancel)
+      newBtns.push(new IconButtonOptions(() => this.showCancelDiag(this._appointments[this.selected[0]]), 'accent', 'cancel', 'Cancel the selected Appointment'));
 
     const options: ToolbarOptions = {
       title: 'Appointments',
@@ -224,19 +222,19 @@ export class AppointmentComponent implements OnInit {
     });
   }
 
-  // private showDetailDiag = (client: Client): void => {
-  //   const dialogRef = this.dialog.open(ClientDetailComponent, {
-  //     data: { client: client },
-  //     autoFocus: true,
-  //     disableClose: true,
-  //     hasBackdrop: true,
-  //     minWidth: 320
-  //   });
+  private showDetailDiag = (appt: Appointment): void => {
+    const dialogRef = this.dialog.open(AppointmentDetailComponent, {
+      data: { appt: appt },
+      autoFocus: true,
+      disableClose: true,
+      hasBackdrop: true,
+      minWidth: 320
+    });
 
-  //   dialogRef.afterClosed().subscribe(_ => {
-  //     console.log(`The detail dialog was closed`);
-  //   });
-  // }
+    dialogRef.afterClosed().subscribe(_ => {
+      console.log(`The detail dialog was closed`);
+    });
+  }
 
   private reloadAppointments = (): void => {
     const s = this.appointmentService.getAppointments().subscribe(_ => {
@@ -245,22 +243,9 @@ export class AppointmentComponent implements OnInit {
       this.hasAppointments = this._appointments.length > 0;
       this.sortAppointments();
       this.dataSource.data = this._appointments;
-      if (this.paginator)
-        this.dataSource.paginator = this.paginator;
-      if (this.sort)
-        this.dataSource.sort = this.sort;
+      this.dataSource.paginator = this.paginator;
 
-      this.dataSource.sortingDataAccessor = (item, property) => {
-        if (typeof item === 'object') {
-          switch (property) {
-            case 'client': return  item.client['id'];
-            case 'tech': return  item.technician['id'];
-            default: return item[property];
-          }
-        } else
-          return item[property];
-      }
-
+      this.setSorting();
       this.setStatuses();
 
       s.unsubscribe();
@@ -309,5 +294,20 @@ export class AppointmentComponent implements OnInit {
         return 0;
       return -1;
     });
+  }
+
+  private setSorting = (): void => {
+    if (this.sort) {
+      this.dataSource.sort = this.sort;
+      const sortingDataAccessor = (i, p) => {
+        switch (p) {
+          case 'client': return `${i.client.firstName} ${i.client.lastName}`;
+          case 'technician': return `${i.technician.firstName} ${i.technician.lastName}`;
+          case 'date': return i.date.toISOString();
+          case 'status': return i.status.toString();
+        }
+      };
+      this.dataSource.sortingDataAccessor = sortingDataAccessor;
+    }
   }
 }

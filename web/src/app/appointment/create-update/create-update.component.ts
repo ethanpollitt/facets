@@ -58,6 +58,12 @@ export class CreateUpdateAppointmentComponent implements OnInit {
   ngOnInit(): void {
     if (this.data && this.data.appointment) {
       this.currentAppointment = this.data.appointment;
+
+      if (this.currentAppointment.cancelled) {
+        this.form.disable();
+        this.form.controls.customerNotes.enable();
+      }
+
       Object.keys(this.form.controls).forEach((_: string) => {
         switch (_) {
           case "windowHours":

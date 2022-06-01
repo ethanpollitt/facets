@@ -25,13 +25,13 @@
       </div>
       <div *ngIf="!hasAppointments" class="no-appointments">No appointments found!</div>
 
-      <table *ngIf="hasAppointments" mat-table class="all-radius table" [dataSource]="dataSource" matSort matPaginator>
+      <table [hidden]="!hasAppointments" mat-table class="all-radius table" [dataSource]="dataSource" matSort matPaginator>
         <ng-container matColumnDef="client">
           <th mat-header-cell *matHeaderCellDef mat-sort-header id="client" class="header-cell">Client</th>
           <td mat-cell *matCellDef="let appointment" class="row-cell">{{ appointment?.client.firstName }} {{ appointment?.client.lastName }} ({{ appointment.client.type === 'RES' ? 'R' : 'C' }})</td>
         </ng-container>
         <ng-container matColumnDef="technician">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header id="tech" class="header-cell">Technician</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header id="technician" class="header-cell">Technician</th>
           <td mat-cell *matCellDef="let appointment" class="row-cell">{{ appointment.technician.firstName }} {{ appointment.technician.lastName }}</td>
         </ng-container>
         <ng-container matColumnDef="date">
@@ -47,14 +47,14 @@
           <td mat-cell *matCellDef="let appointment" class="row-cell">{{ appointment.customerNotes | ellipsis:25 }}</td>
         </ng-container>
         <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef class="header-cell">Appt. Status</th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header id="status" class="header-cell">Appt. Status</th>
           <td mat-cell *matCellDef="let appointment" class="row-cell">{{ statuses?.get(appointment.id).display }}</td>
         </ng-container>
       
         <tr mat-header-row class="top-radius header" *matHeaderRowDef="displayedFields"></tr>
         <tr mat-row class="selectable row" [ngClass]="{ 'selected': selected.includes(i), 'selectable': !selected.includes(i) }" (click)="onRowClick(i)" *matRowDef="let appointment; columns: displayedFields; let i=index"></tr>
-        <!-- <mat-paginator #paginatorEle [length]="this.dataSource?.data?.length" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator> -->
       </table>
+      <mat-paginator #paginatorEle [length]="this.dataSource?.data?.length" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
     </div>
 </div>
 
